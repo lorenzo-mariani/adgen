@@ -71,18 +71,18 @@ To use the run mode type:
 
 ### Config mode
 
-The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _param_config.ini_.
+The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _os_config.ini_.
 
 _conn_config.ini_ contains the parameters necessary for the connection to the database, i.e., url, username, password, nodes, domain. It must have the following structure:
 
     [CONNECTION]
     url = <url>
-    username = <ursername>
+    username = <username>
     password = <password>
     domain = <domain>
     nodes = <nodes>   
 
-_param_config.ini_ contains the list of client/server operating systems (along with their frequency) that adgen will use when generating client computers and domain controllers. list of operating systems that adgen will use when generating client computers and domain controllers. It must have the following structure:
+_os_config.ini_ contains the list of client/server operating systems (along with their frequency) that adgen will use when generating client computers and domain controllers. list of operating systems that adgen will use when generating client computers and domain controllers. It must have the following structure:
 
     [CLIENTS]
     Windows 7 Professional = 10
@@ -101,6 +101,10 @@ _param_config.ini_ contains the list of client/server operating systems (along w
     Windows Server 2022 Standard = 10
     
 **NOTE!** Since the frequency of operating systems represents their percentage of the total number of operating systems, it is important that their sum (both in the client case and in the server case) is equal to 100%, as in the example above.
+
+To use config mode type:
+
+    adgen config --conn </path/to/conn_config.ini> --os </path/to/os_config.ini>
 
 ## COPYRIGHT
 
