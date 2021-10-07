@@ -1,63 +1,61 @@
 import math
 import random
 
-from adgen.config import PARTITIONS
 from adgen.utils.utils import cn, cs, cws
 
 
-def create_domain_nodes(session, domain, sid):
+def create_domain_nodes(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
-    session.run(f"{base_statement},n.highvalue=true", sid=cs(512, sid), gname=cn("DOMAIN ADMINS", domain))
-    session.run(base_statement, sid=cs(515, sid), gname=cn("DOMAIN COMPUTERS", domain))
-    session.run(base_statement, gname=cn("DOMAIN USERS", domain), sid=cs(513, sid))
+    session.run(f"{base_statement},n.highvalue=true", sid=cs(512, domain_sid), gname=cn("DOMAIN ADMINS", domain_name))
+    session.run(base_statement, sid=cs(515, domain_sid), gname=cn("DOMAIN COMPUTERS", domain_name))
+    session.run(base_statement, gname=cn("DOMAIN USERS", domain_name), sid=cs(513, domain_sid))
 
 
-def create_domain_controllers(session, domain, sid):
+def create_domain_controllers(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain), sid=cs(516, sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain), sid=cws("S-1-5-9", sid))
-    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain), sid=cs(498, sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name), sid=cs(516, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name), sid=cws("S-1-5-9", domain_sid))
+    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain_name), sid=cs(498, domain_sid))
 
 
-def create_administrators(session, domain, sid):
+def create_administrators(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ADMINISTRATORS", domain), sid=cs(544, sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain), sid=cs(519, sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ADMINISTRATORS", domain_name), sid=cs(544, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name), sid=cs(519, domain_sid))
 
 
-def create_domain(session, domain, sid):
+def create_domain(session, domain_name, domain_sid):
     session.run(
         """
         MERGE (n:Base {name:$domain})
         SET n:Domain, n.highvalue=true, n.objectid=$objectid
         """,
-        domain=domain,
-        objectid=sid
+        domain=domain_name,
+        objectid=domain_sid
     )
 
 
-def data_generation(session, domain, sid, nodes):
-    print("Starting data generation with nodes={}".format(nodes))
-    create_domain_nodes(session, domain, sid)
-    create_domain_controllers(session, domain, sid)
-    create_administrators(session, domain, sid)
-    create_domain(session, domain, sid)
+def data_generation(session, domain_name, domain_sid, num_nodes):
+    print("Starting data generation with nodes={}".format(num_nodes))
+    create_domain_nodes(session, domain_name, domain_sid)
+    create_domain_controllers(session, domain_name, domain_sid)
+    create_administrators(session, domain_name, domain_sid)
+    create_domain(session, domain_name, domain_sid)
 
 
-def create_groups(session, domain, sid, nodes, groups, ridcount):
+def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount, groups_list):
     print("Generating Group Nodes")
-    dept_list = PARTITIONS
     props = []
     group_props_list = []
 
-    for i in range(1, nodes + 1):
-        dept = random.choice(dept_list)
-        group = "{}{:05d}@{}".format(dept, i, domain)
-        groups.append(group)
-        sid = cs(ridcount, sid)
+    for i in range(1, num_nodes + 1):
+        group = random.choice(groups_list)
+        group_name = "{}{:05d}@{}".format(group, i, domain_name)
+        groups.append(group_name)
+        sid = cs(ridcount, domain_sid)
         ridcount += 1
         group_props = {
-            "name": group,
+            "name": group_name,
             "id": sid
         }
         props.append(group_props)
@@ -85,10 +83,10 @@ def create_groups(session, domain, sid, nodes, groups, ridcount):
     return group_props_list, groups, ridcount
 
 
-def add_domain_admins(session, domain, nodes, users):
+def add_domain_admins(session, domain_name, num_nodes, users):
     dapctint = random.randint(3, 5)
     dapct = float(dapctint) / 100
-    danum = int(math.ceil(nodes * dapct))
+    danum = int(math.ceil(num_nodes * dapct))
     danum = min([danum, 30])
     print("Creating {} Domain Admins ({}% of users capped at 30)".format(danum, dapctint))
     das = random.sample(users, danum)
@@ -103,13 +101,13 @@ def add_domain_admins(session, domain, nodes, users):
             MERGE (n)-[:MemberOf]->(m)
             """,
             name=da,
-            gname=cn("DOMAIN ADMINS", domain))
+            gname=cn("DOMAIN ADMINS", domain_name))
     return das
 
 
-def create_nested_groups(session, nodes, groups):
+def create_nested_groups(session, num_nodes, groups):
     print("Applying random group nesting")
-    max_nest = int(round(math.log10(nodes)))
+    max_nest = int(round(math.log10(num_nodes)))
     props = []
 
     for group in groups:
@@ -150,26 +148,24 @@ def create_nested_groups(session, nodes, groups):
         props=props)
 
 
-def add_users_to_group(session, nodes, users, groups, das):
+def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
     print("Adding users to groups")
     props = []
-    a = math.log10(nodes)
+    a = math.log10(num_nodes)
     a = math.pow(a, 2)
     a = math.floor(a)
     a = int(a)
     num_groups_base = a
-    variance = int(math.ceil(math.log10(nodes)))
+    variance = int(math.ceil(math.log10(num_nodes)))
     it_users = []
 
     print("Calculated {} groups per user with a variance of - {}".format(num_groups_base, variance * 2))
 
-    dept_list = PARTITIONS
-
     for user in users:
-        dept = random.choice(dept_list)
-        if dept == "IT":
+        group = random.choice(groups_list)
+        if group == "IT":
             it_users.append(user)
-        possible_groups = [x for x in groups if dept in x]
+        possible_groups = [x for x in groups if group in x]
 
         sample = num_groups_base + random.randrange(-(variance * 2), 0)
         if sample > len(possible_groups):

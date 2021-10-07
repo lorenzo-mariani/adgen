@@ -1,34 +1,33 @@
 import random
 import math
 
-from adgen.config import ACLS_LIST
 from adgen.generators.gpos import link_default_gpos
 from adgen.utils.utils import cs
 
 
-def create_enterprise_admins(session, domain):
-    group = "ENTERPRISE ADMINS@{}".format(domain)
+def create_enterprise_admins(session, domain_name):
+    group_name = "ENTERPRISE ADMINS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
         MERGE (m:Group {name:$gname})
         MERGE (m)-[:GenericAll {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
 
-def create_administrators(session, domain):
-    group = "ADMINISTRATORS@{}".format(domain)
+def create_administrators(session, domain_name):
+    group_name = "ADMINISTRATORS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
         MERGE (m:Group {name:$gname})
         MERGE (m)-[:Owns {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -39,8 +38,8 @@ def create_administrators(session, domain):
         WITH n,m
         MERGE (m)-[:WriteOwner {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -51,8 +50,8 @@ def create_administrators(session, domain):
         WITH n,m
         MERGE (m)-[:WriteDacl {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -63,8 +62,8 @@ def create_administrators(session, domain):
         WITH n,m
         MERGE (m)-[:DCSync {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -75,8 +74,8 @@ def create_administrators(session, domain):
         WITH n,m
         MERGE (m)-[:GetChanges {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -87,13 +86,13 @@ def create_administrators(session, domain):
         WITH n,m
         MERGE (m)-[:GetChangesAll {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
 
-def create_domain_admins(session, domain):
-    group = "DOMAIN ADMINS@{}".format(domain)
+def create_domain_admins(session, domain_name):
+    group_name = "DOMAIN ADMINS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
@@ -102,8 +101,8 @@ def create_domain_admins(session, domain):
         WITH n,m
         MERGE (m)-[:WriteOwner {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -114,8 +113,8 @@ def create_domain_admins(session, domain):
         WITH n,m
         MERGE (m)-[:WriteDacl {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -126,8 +125,8 @@ def create_domain_admins(session, domain):
         WITH n,m
         MERGE (m)-[:DCSync {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
     session.run(
@@ -138,8 +137,8 @@ def create_domain_admins(session, domain):
         WITH n,m
         MERGE (m)-[:GetChanges {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group)
+        domain=domain_name,
+        gname=group_name)
 
     session.run(
         """
@@ -149,13 +148,13 @@ def create_domain_admins(session, domain):
         WITH n,m
         MERGE (m)-[:GetChangesAll {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
 
-def create_enterprise_dcs(session, domain):
-    group = "ENTERPRISE DOMAIN CONTROLLERS@{}".format(domain)
+def create_enterprise_dcs(session, domain_name):
+    group_name = "ENTERPRISE DOMAIN CONTROLLERS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
@@ -164,11 +163,11 @@ def create_enterprise_dcs(session, domain):
         WITH n,m
         MERGE (m)-[:GetChanges {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
-    group = "ENTERPRISE READ-ONLY DOMAIN CONTROLLERS@{}".format(domain)
+    group_name = "ENTERPRISE READ-ONLY DOMAIN CONTROLLERS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
@@ -177,11 +176,11 @@ def create_enterprise_dcs(session, domain):
         WITH n,m
         MERGE (m)-[:GetChanges {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
-    group = "DOMAIN CONTROLLERS@{}".format(domain)
+    group_name = "DOMAIN CONTROLLERS@{}".format(domain_name)
     session.run(
         """
         MERGE (n:Domain {name:$domain})
@@ -190,21 +189,21 @@ def create_enterprise_dcs(session, domain):
         WITH n,m
         MERGE (m)-[:GetChangesAll {isacl:true}]->(n)
         """,
-        domain=domain,
-        gname=group
+        domain=domain_name,
+        gname=group_name
     )
 
 
-def add_standard_edges(session, domain, dcou):
+def add_standard_edges(session, domain_name, dcou):
     print("Adding Standard Edges")
-    link_default_gpos(session, domain, dcou)
-    create_enterprise_admins(session, domain)
-    create_administrators(session, domain)
-    create_domain_admins(session, domain)
-    create_enterprise_dcs(session, domain)
+    link_default_gpos(session, domain_name, dcou)
+    create_enterprise_admins(session, domain_name)
+    create_administrators(session, domain_name)
+    create_domain_admins(session, domain_name)
+    create_enterprise_dcs(session, domain_name)
 
 
-def add_domain_admin_to_local_admin(session, sid):
+def add_domain_admin_to_local_admin(session, domain_sid):
     print("Adding Domain Admins to Local Admins of Computers")
     session.run(
         """
@@ -212,7 +211,7 @@ def add_domain_admin_to_local_admin(session, sid):
         MATCH (m:Group {objectid: $id})
         MERGE (m)-[:AdminTo]->(n)
         """,
-        id=cs(512, sid)
+        id=cs(512, domain_sid)
     )
 
 
@@ -291,9 +290,9 @@ def add_local_admin_rights(session, groups, computers):
     return it_groups
 
 
-def add_domain_admin_aces(session, domain, computers, users, groups):
+def add_domain_admin_aces(session, domain_name, computers, users, groups):
     print("Adding Domain Admin ACEs")
-    group = "DOMAIN ADMINS@{}".format(domain)
+    group_name = "DOMAIN ADMINS@{}".format(domain_name)
     props = []
     for x in computers:
         props.append({'name': x})
@@ -309,7 +308,7 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
                 MERGE (m)-[r:GenericAll {isacl:true}]->(n)
                 """,
                 props=props,
-                gname=group
+                gname=group_name
             )
             props = []
 
@@ -323,7 +322,7 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
         MERGE (m)-[r:GenericAll {isacl:true}]->(n)
         """,
         props=props,
-        gname=group
+        gname=group_name
     )
 
     for x in users:
@@ -340,7 +339,7 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
                 MERGE (m)-[r:GenericAll {isacl:true}]->(n)
                 """,
                 props=props,
-                gname=group
+                gname=group_name
             )
             props = []
 
@@ -354,7 +353,7 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
         MERGE (m)-[r:GenericAll {isacl:true}]->(n)
         """,
         props=props,
-        gname=group
+        gname=group_name
     )
 
     for x in groups:
@@ -371,7 +370,7 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
                 MERGE (m)-[r:GenericAll {isacl:true}]->(n)
                 """,
                 props=props,
-                gname=group
+                gname=group_name
             )
             props = []
 
@@ -385,16 +384,15 @@ def add_domain_admin_aces(session, domain, computers, users, groups):
         MERGE (m)-[r:GenericAll {isacl:true}]->(n)
         """,
         props=props,
-        gname=group
+        gname=group_name
     )
 
 
-def add_outbound_acls(session, it_groups, it_users, gpos, computers):
+def add_outbound_acls(session, it_groups, it_users, gpos, computers, acl_list):
     num_acl_principals = int(round(len(it_groups) * .1))
     print("Adding outbound ACLs to {} objects".format(num_acl_principals))
     acl_groups = random.sample(it_groups, num_acl_principals)
     all_principals = it_users + it_groups
-    acl_list = ACLS_LIST
 
     for i in acl_groups:
         ace = random.choice(acl_list)

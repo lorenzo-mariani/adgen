@@ -1,25 +1,23 @@
 import math
 import random
 
-from adgen.config import STATES, SERVER_OS_LIST, CLIENT_OS_LIST
 from adgen.utils.utils import cn, cs
 
 
-def create_computers(session, domain, sid, nodes, computers):
+def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list):
     print("Generating Computer Nodes")
     computer_props_list = []
-    group = "DOMAIN COMPUTERS@{}".format(domain)
+    group_name = "DOMAIN COMPUTERS@{}".format(domain_name)
     props = []
     ridcount = 1000
-    client_os_list = CLIENT_OS_LIST
 
-    for i in range(1, nodes + 1):
-        comp_name = "COMP{:05d}.{}".format(i, domain)
+    for i in range(1, num_nodes + 1):
+        comp_name = "COMP{:05d}.{}".format(i, domain_name)
         computers.append(comp_name)
         os = random.choice(client_os_list)
         enabled = True
         computer_props = {
-            "id": cs(ridcount, sid),
+            "id": cs(ridcount, domain_sid),
             "props": {
                 "name": comp_name,
                 "operatingsystem": os,
@@ -42,7 +40,7 @@ def create_computers(session, domain, sid, nodes, computers):
                 MERGE (n)-[:MemberOf]->(m)
                 """,
                 props=props,
-                gname=group
+                gname=group_name
             )
             props = []
     session.run(
@@ -56,22 +54,20 @@ def create_computers(session, domain, sid, nodes, computers):
         MERGE (n)-[:MemberOf]->(m)
         """,
         props=props,
-        gname=group
+        gname=group_name
     )
     return computer_props_list, computers, ridcount
 
 
-def create_dcs(session, domain, sid, dcou, ridcount):
+def create_dcs(session, domain_name, domain_sid, dcou, ridcount, server_os_list, ous_list):
     print("Creating Domain Controllers")
     dc_props_list = []
-    os_list = SERVER_OS_LIST
-    states = STATES
 
-    for state in states:
-        comp_name = cn(f"{state}LABDC", domain)
-        group_name = cn("DOMAIN CONTROLLERS", domain)
-        sid = cs(ridcount, sid)
-        os = random.choice(os_list)
+    for ou in ous_list:
+        comp_name = cn(f"{ou}LABDC", domain_name)
+        group_name = cn("DOMAIN CONTROLLERS", domain_name)
+        sid = cs(ridcount, domain_sid)
+        os = random.choice(server_os_list)
         enabled = True
 
         dc_props = {
@@ -120,7 +116,7 @@ def create_dcs(session, domain, sid, dcou, ridcount):
             MERGE (n)-[:MemberOf]->(m)
             """,
             sid=sid,
-            gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain)
+            gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name)
         )
 
         session.run(
@@ -132,7 +128,7 @@ def create_dcs(session, domain, sid, dcou, ridcount):
             MERGE (m)-[:AdminTo]->(n)
             """,
             sid=sid,
-            gname=cn("DOMAIN ADMINS", domain)
+            gname=cn("DOMAIN ADMINS", domain_name)
         )
     return dc_props_list, ridcount
 
@@ -258,9 +254,9 @@ def add_rdp_dcom_delegate(session, computers, it_users, it_groups):
     add_allowed_to_delegate_to_computers(session, computers, count)
 
 
-def add_sessions(session, nodes, computers, users, das):
+def add_sessions(session, num_nodes, computers, users, das):
     print("Adding sessions")
-    max_sessions_per_user = int(math.ceil(math.log10(nodes)))
+    max_sessions_per_user = int(math.ceil(math.log10(num_nodes)))
     props = []
     for user in users:
         num_sessions = random.randrange(0, max_sessions_per_user)

@@ -3,16 +3,16 @@ import random
 from adgen.utils.utils import cs, generate_timestamp
 
 
-def create_users(session, domain, sid, nodes, current_time, first_names, last_names, users, ridcount):
+def create_users(session, domain_name, domain_sid, num_nodes, current_time, first_names, last_names, users, ridcount):
     print("Generating User Nodes")
     user_props = []
-    group = "DOMAIN USERS@{}".format(domain)
+    group_name = "DOMAIN USERS@{}".format(domain_name)
     props = []
 
-    for i in range(1, nodes + 1):
+    for i in range(1, num_nodes + 1):
         first = random.choice(first_names)
         last = random.choice(last_names)
-        user_name = "{}{}{:05d}@{}".format(first[0], last, i, domain).upper()
+        user_name = "{}{}{:05d}@{}".format(first[0], last, i, domain_name).upper()
         user_name = user_name.format(first[0], last, i).upper()
         users.append(user_name)
         dispname = "{} {}".format(first, last)
@@ -20,7 +20,7 @@ def create_users(session, domain, sid, nodes, current_time, first_names, last_na
         pwdlastset = generate_timestamp(current_time)
         lastlogon = generate_timestamp(current_time)
         ridcount += 1
-        objectsid = cs(ridcount, sid)
+        objectsid = cs(ridcount, domain_sid)
 
         user_properties = {
             'id': objectsid,
@@ -48,7 +48,7 @@ def create_users(session, domain, sid, nodes, current_time, first_names, last_na
                 MERGE (n)-[:MemberOf]->(m)
                 """,
                 props=props,
-                gname=group
+                gname=group_name
             )
             props = []
 
@@ -63,7 +63,7 @@ def create_users(session, domain, sid, nodes, current_time, first_names, last_na
         MERGE (n)-[:MemberOf]->(m)
         """,
         props=props,
-        gname=group
+        gname=group_name
     )
 
     return user_props, users, ridcount

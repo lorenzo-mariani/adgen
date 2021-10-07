@@ -2,34 +2,33 @@ import random
 import math
 import uuid
 
-from adgen.config import STATES
 from adgen.utils.utils import cn, split_seq
 
 
-def create_dcs_ous(session, domain, dcou):
+def create_dcs_ous(session, domain_name, dcou):
     session.run(
         """
         MERGE (n:Base {name:$ou, objectid:$guid, blocksInheritance: false})
         SET n:OU
         """,
-        ou=cn("DOMAIN CONTROLLERS", domain),
+        ou=cn("DOMAIN CONTROLLERS", domain_name),
         guid=dcou
     )
 
 
-def create_computers_ous(session, domain, computers, ou_guid_map, ou_props, nodes):
+def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props, num_nodes, ous_list):
     print("Creating OUs")
     temp_comps = computers
     random.shuffle(temp_comps)
-    split_num = int(math.ceil(nodes / 10))
+    split_num = int(math.ceil(num_nodes / 10))
     split_comps = list(split_seq(temp_comps, split_num))
-    num_states = len(STATES)
+    num_states = len(ous_list)
     props = []
 
     for i in range(0, num_states):
-        state = STATES[i]
+        ou = ous_list[i]
         ou_comps = split_comps[i]
-        ouname = "{}_COMPUTERS@{}".format(state, domain)
+        ouname = "{}_COMPUTERS@{}".format(ou, domain_name)
         guid = str(uuid.uuid4())
         ou_guid_map[ouname] = guid
         for c in ou_comps:
@@ -66,18 +65,18 @@ def create_computers_ous(session, domain, computers, ou_guid_map, ou_props, node
     return ou_props, ou_guid_map
 
 
-def create_users_ous(session, domain, users, ou_guid_map, ou_props, nodes):
+def create_users_ous(session, domain_name, users, ou_guid_map, ou_props, num_nodes, ous_list):
     temp_users = users
     random.shuffle(temp_users)
-    split_num = int(math.ceil(nodes / 10))
+    split_num = int(math.ceil(num_nodes / 10))
     split_users = list(split_seq(temp_users, split_num))
     props = []
-    num_states = len(STATES)
+    num_states = len(ous_list)
 
     for i in range(0, num_states):
-        state = STATES[i]
+        ou = ous_list[i]
         ou_users = split_users[i]
-        ouname = "{}_USERS@{}".format(state, domain)
+        ouname = "{}_USERS@{}".format(ou, domain_name)
         guid = str(uuid.uuid4())
         ou_guid_map[ouname] = guid
         for c in ou_users:
@@ -118,7 +117,7 @@ def create_users_ous(session, domain, users, ou_guid_map, ou_props, nodes):
     return ou_props, ou_guid_map
 
 
-def link_ous_to_domain(session, domain, ou_guid_map):
+def link_ous_to_domain(session, domain_name, ou_guid_map):
     props = []
     for x in list(ou_guid_map.keys()):
         guid = ou_guid_map[x]
@@ -133,5 +132,5 @@ def link_ous_to_domain(session, domain, ou_guid_map):
         WITH n,m MERGE (m)-[:Contains]->(n)
         """,
         props=props,
-        domain=domain
+        domain=domain_name
     )

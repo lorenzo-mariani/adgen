@@ -3,6 +3,7 @@ import sys
 from adgen.cl_parser import parse_args
 from adgen.commands.interactive import interactive
 from adgen.commands.run import run
+from adgen.commands.config import config
 
 
 def main():
@@ -11,8 +12,12 @@ def main():
     cmd = args.command
     cmd_params = vars(args)
 
-    if cmd == "interactive":
-        interactive()
-    elif cmd == "run":
-        run(cmd_params)
-
+    try:
+        if cmd == "interactive":
+            interactive()
+        elif cmd == "run":
+            run(cmd_params)
+        elif cmd == "config":
+            config(cmd_params)
+    except Exception as err:
+        print("{error}".format(error=err))

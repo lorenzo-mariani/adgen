@@ -119,10 +119,10 @@ def generate_data(entity):
     create_dcs_ous(session, entity.domain, dcou)
     add_standard_edges(session, entity.domain, dcou)
 
-    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers)
-    dcs_props, ridcount = create_dcs(session, entity.domain, entity.sid, dcou, ridcount)
+    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
+    dcs_props, ridcount = create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
     user_props, users, ridcount = create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount)
+    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
 
     add_domain_admin_to_local_admin(session, entity.sid)
 
@@ -130,15 +130,15 @@ def generate_data(entity):
 
     create_nested_groups(session, entity.nodes, groups)
 
-    it_users = add_users_to_group(session, entity.nodes, users, groups, das)
+    it_users = add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
     it_groups = add_local_admin_rights(session, groups, computers)
 
     add_rdp_dcom_delegate(session, computers, it_users, it_groups)
     add_sessions(session, entity.nodes, computers, users, das)
     add_domain_admin_aces(session, entity.domain, computers, users, groups)
 
-    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes)
-    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes)
+    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
+    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
 
     link_ous_to_domain(session, entity.domain, ou_guid_map)
 
@@ -146,7 +146,7 @@ def generate_data(entity):
 
     link_to_ous(session, gpos, entity.domain, ou_guid_map)
 
-    add_outbound_acls(session, it_groups, it_users, gpos, computers)
+    add_outbound_acls(session, it_groups, it_users, gpos, computers, entity.acls)
     add_kerberoastable_users(session, it_users)
     add_unconstrained_delegation(session, computers)
 
