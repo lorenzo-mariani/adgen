@@ -7,14 +7,14 @@ from adgen.commands.config import config
 
 
 def main():
-    """Main routine of adgen."""
+    # Main routine of adgen
     args = parse_args(sys.argv[1:])
     cmd = args.command
     cmd_params = vars(args)
 
     try:
         if cmd == "interactive":
-            interactive()
+            interactive(cmd_params)
         elif cmd == "run":
             run(cmd_params)
         elif cmd == "config":

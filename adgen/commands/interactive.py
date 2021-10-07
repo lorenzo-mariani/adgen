@@ -1,12 +1,10 @@
 from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setdomain, clear_and_generate, generate
 from adgen.initializer import initialize
-from adgen.entities.entity import Entity
 from adgen.utils.printer import print_commands
 
 
-def interactive():
-    interactive_entity = Entity()
-    initialize(interactive_entity, "interactive")
+def interactive(args):
+    interactive_entity = initialize(args)
 
     while True:
         print_commands()

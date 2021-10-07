@@ -40,10 +40,10 @@ def get_list_from_pkl(args):
         return pickle.load(f)
 
 
-def get_list_from_default_ini(list_name):
+def get_list_from_ini(list_name, path):
     config = ConfigParser()
     config.optionxform = str
-    config.read(os.path.abspath("adgen\data\default_config.ini"))
+    config.read(path)
 
     section = list_name
     generic_list = []
@@ -51,5 +51,19 @@ def get_list_from_default_ini(list_name):
     for opt in config.options(section):
         for frequency in range(0, config.getint(section, opt)):
             generic_list.append(opt)
-
     return generic_list
+
+
+def get_value_from_ini(list_name, opt_name, path):
+    config = ConfigParser()
+    config.optionxform = str
+    config.read(path)
+
+    section = list_name
+
+    if opt_name == 'nodes':
+        return config.getint(section, opt_name)
+    elif opt_name == 'domain':
+        return (config.get(section, opt_name)).upper()
+    else:
+        return config.get(section, opt_name)

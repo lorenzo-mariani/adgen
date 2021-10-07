@@ -14,7 +14,8 @@ def parse_args(args):
     run_parser = subparsers.add_parser('run', help='Run mode')
 
     # config parser
-    config_parser.add_argument('path', type=str, help='')
+    config_parser.add_argument('--conn', type=str, help='', required=True)
+    config_parser.add_argument('--os', type=str, help='', required=True)
 
     # run parser
     run_parser.add_argument('--url', type=str, help='Database URL to connect to', required=True)
