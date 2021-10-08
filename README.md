@@ -71,7 +71,7 @@ To use the run mode type:
 
 ### Config mode
 
-The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _os_config.ini_.
+The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _param_config.ini_.
 
 _conn_config.ini_ contains the parameters necessary for the connection to the database, i.e., url, username, password, nodes, domain. It must have the following structure:
 
@@ -82,7 +82,7 @@ _conn_config.ini_ contains the parameters necessary for the connection to the da
     domain = <domain>
     nodes = <nodes>   
 
-_os_config.ini_ contains the list of client/server operating systems (along with their frequency) that adgen will use when generating client computers and domain controllers. list of operating systems that adgen will use when generating client computers and domain controllers. It must have the following structure:
+_param_config.ini_ contains the list of client/server operating systems (along with their frequencies) that adgen will use when generating client computers and domain controllers, as well as information about acls, groups and ous (along with their frequencies). It must have the following structure:
 
     [CLIENTS]
     Windows 7 Professional = 10
@@ -100,7 +100,33 @@ _os_config.ini_ contains the list of client/server operating systems (along with
     Windows Server 2022 Datacenter = 10
     Windows Server 2022 Standard = 10
     
-**NOTE!** Since the frequency of operating systems represents their percentage of the total number of operating systems, it is important that their sum (both in the client case and in the server case) is equal to 100%, as in the example above.
+    [ACLS]
+    GenericAll = 10
+    GenericWrite = 15
+    WriteOwner = 15
+    WriteDacl = 15
+    AddMember = 30
+    ForceChangePassword = 15
+    ReadLAPSPassword = 10
+
+    [GROUPS]
+    IT = 7
+    HR = 13
+    MARKETING = 30
+    OPERATIONS = 20
+    BIDNESS = 30
+
+    [OUS]
+    WA = 2
+    MD = 2
+    AL = 4
+    IN = 2
+    NV = 2
+    VA = 1
+    CA = 2
+    NY = 3
+    TX = 1
+    FL = 1
 
 To use config mode type:
 
