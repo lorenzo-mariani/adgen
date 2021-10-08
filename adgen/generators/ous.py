@@ -20,11 +20,10 @@ def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props,
     print("Creating OUs")
     temp_comps = computers
     random.shuffle(temp_comps)
-    split_num = int(math.ceil(num_nodes / 10))
-    split_comps = list(split_seq(temp_comps, split_num))
     num_ous = len(ous_list)
+    split_num = int(math.ceil(num_nodes / num_ous))
+    split_comps = list(split_seq(temp_comps, split_num))
     props = []
-
 
     for i in range(0, num_ous):
         ou = ous_list[i]
@@ -69,10 +68,10 @@ def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props,
 def create_users_ous(session, domain_name, users, ou_guid_map, ou_props, num_nodes, ous_list):
     temp_users = users
     random.shuffle(temp_users)
-    split_num = int(math.ceil(num_nodes / 10))
+    num_ous = len(ous_list)
+    split_num = int(math.ceil(num_nodes / num_ous))
     split_users = list(split_seq(temp_users, split_num))
     props = []
-    num_ous = len(ous_list)
 
     for i in range(0, num_ous):
         ou = ous_list[i]
