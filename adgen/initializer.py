@@ -9,9 +9,6 @@ def initialize(args):
     ent.sid = DEFAULT_CONFIG.get('sid')
     ent.first_names = DEFAULT_CONFIG.get('first_names')
     ent.last_names = DEFAULT_CONFIG.get('last_names')
-    ent.acls = DEFAULT_CONFIG.get('acls')
-    ent.groups = DEFAULT_CONFIG.get('groups')
-    ent.ous = DEFAULT_CONFIG.get('ous')
 
     if args.get('command') == "config":
         try:
@@ -20,13 +17,19 @@ def initialize(args):
             ent.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
             ent.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
             ent.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
-            ent.clients_os = get_list_from_ini("CLIENTS", args.get('os'))
-            ent.servers_os = get_list_from_ini("SERVERS", args.get('os'))
+            ent.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
+            ent.servers_os = get_list_from_ini("SERVERS", args.get('param'))
+            ent.acls = get_list_from_ini("ACLS", args.get('param'))
+            ent.groups = get_list_from_ini("GROUPS", args.get('param'))
+            ent.ous = get_list_from_ini("OUS", args.get('param'))
         except Exception as err:
             print("Failed Retrieving Data: {error}".format(error=err))
     else:
         ent.clients_os = DEFAULT_CONFIG.get('clients_os')
         ent.servers_os = DEFAULT_CONFIG.get('servers_os')
+        ent.acls = DEFAULT_CONFIG.get('acls')
+        ent.groups = DEFAULT_CONFIG.get('groups')
+        ent.ous = DEFAULT_CONFIG.get('ous')
 
         if args.get('command') == "run":
             ent.url = args.get('url')
