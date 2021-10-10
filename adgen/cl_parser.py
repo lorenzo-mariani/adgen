@@ -3,6 +3,19 @@ import sys
 
 
 def parse_args(args):
+    """
+    This function parses the arguments which have been passed from the command
+    line, these can be easily retrieved for example by using "sys.argv[1:]".
+    It returns an argparse Namespace object.
+
+    Arguments:
+    args -- the list of arguments passed from the command line as the sys.argv
+            format
+
+    Returns:
+    An argparse Namespace object with the provided arguments, which
+    can be used in a simpler format.
+    """
     parser = argparse.ArgumentParser(prog='adgen', description='An Active Directory generator')
 
     subparsers = parser.add_subparsers(help='commands', dest='command')

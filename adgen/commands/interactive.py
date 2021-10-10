@@ -4,6 +4,13 @@ from adgen.utils.printer import print_commands
 
 
 def interactive(args):
+    """
+    This function executes the interactive mode.
+
+    Arguments:
+    args -- the list of arguments passed from the command line
+    """
+
     interactive_entity = initialize(args)
 
     while True:

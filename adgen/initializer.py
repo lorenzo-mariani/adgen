@@ -4,6 +4,15 @@ from adgen.utils.utils import get_list_from_ini, get_value_from_ini
 
 
 def initialize(args):
+    """
+    Initialize an Entity with the provided configuration.
+
+    Arguments:
+    args -- the list of arguments passed from the command line
+
+    Returns:
+    The Entity with the provided configuration.
+    """
     ent = Entity()
     ent.current_time = DEFAULT_CONFIG.get('current_time')
     ent.sid = DEFAULT_CONFIG.get('sid')
