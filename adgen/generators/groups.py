@@ -13,15 +13,19 @@ def create_domain_nodes(session, domain_name, domain_sid):
 
 def create_domain_controllers(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name), sid=cs(516, domain_sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name), sid=cws("S-1-5-9", domain_sid))
-    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain_name), sid=cs(498, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name),
+                sid=cs(516, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name),
+                sid=cws("S-1-5-9", domain_sid))
+    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain_name),
+                sid=cs(498, domain_sid))
 
 
 def create_administrators(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
     session.run(f"{base_statement},n.highvalue=true", gname=cn("ADMINISTRATORS", domain_name), sid=cs(544, domain_sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name), sid=cs(519, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name),
+                sid=cs(519, domain_sid))
 
 
 def create_domain(session, domain_name, domain_sid):
@@ -35,8 +39,7 @@ def create_domain(session, domain_name, domain_sid):
     )
 
 
-def data_generation(session, domain_name, domain_sid, num_nodes):
-    print("Starting data generation with nodes={}".format(num_nodes))
+def data_generation(session, domain_name, domain_sid):
     create_domain_nodes(session, domain_name, domain_sid)
     create_domain_controllers(session, domain_name, domain_sid)
     create_administrators(session, domain_name, domain_sid)
@@ -44,7 +47,6 @@ def data_generation(session, domain_name, domain_sid, num_nodes):
 
 
 def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount, groups_list):
-    print("Generating Group Nodes")
     props = []
     group_props_list = []
 
@@ -106,7 +108,6 @@ def add_domain_admins(session, domain_name, num_nodes, users):
 
 
 def create_nested_groups(session, num_nodes, groups):
-    print("Applying random group nesting")
     max_nest = int(round(math.log10(num_nodes)))
     props = []
 
@@ -149,7 +150,6 @@ def create_nested_groups(session, num_nodes, groups):
 
 
 def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
-    print("Adding users to groups")
     props = []
     a = math.log10(num_nodes)
     a = math.pow(a, 2)

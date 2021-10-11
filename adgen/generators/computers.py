@@ -5,7 +5,6 @@ from adgen.utils.utils import cn, cs
 
 
 def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list):
-    print("Generating Computer Nodes")
     computer_props_list = []
     group_name = "DOMAIN COMPUTERS@{}".format(domain_name)
     props = []
@@ -60,7 +59,6 @@ def create_computers(session, domain_name, domain_sid, num_nodes, computers, cli
 
 
 def create_dcs(session, domain_name, domain_sid, dcou, ridcount, server_os_list, ous_list):
-    print("Creating Domain Controllers")
     dc_props_list = []
 
     for ou in ous_list:
@@ -244,7 +242,6 @@ def add_allowed_to_delegate_to_computers(session, computers, count):
 
 
 def add_rdp_dcom_delegate(session, computers, it_users, it_groups):
-    print("Adding RDP/ExecuteDCOM/AllowedToDelegateTo")
     count = int(math.floor(len(computers) * .1))
     add_rdp_users(session, computers, it_users, count)
     add_execute_dcom_users(session, computers, it_users, count)
@@ -255,7 +252,6 @@ def add_rdp_dcom_delegate(session, computers, it_users, it_groups):
 
 
 def add_sessions(session, num_nodes, computers, users, das):
-    print("Adding sessions")
     max_sessions_per_user = int(math.ceil(math.log10(num_nodes)))
     props = []
     for user in users:
@@ -297,7 +293,6 @@ def add_sessions(session, num_nodes, computers, users, das):
 
 
 def add_unconstrained_delegation(session, computers):
-    print("Adding unconstrained delegation to a few computers")
     i = random.randint(10, 20)
     i = min(i, len(computers))
     for computer in random.sample(computers, i):

@@ -45,7 +45,6 @@ def link_default_gpos(session, domain_name, dcou):
 
 
 def create_gpos(session, domain_name, gpos):
-    print("Creating GPOs")
     for i in range(1, 20):
         gpo_name = "GPO_{}@{}".format(i, domain_name)
         guid = str(uuid.uuid4()).upper()

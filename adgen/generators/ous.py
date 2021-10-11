@@ -17,7 +17,6 @@ def create_dcs_ous(session, domain_name, dcou):
 
 
 def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props, num_nodes, ous_list):
-    print("Creating OUs")
     temp_comps = computers
     random.shuffle(temp_comps)
     num_ous = len(ous_list)

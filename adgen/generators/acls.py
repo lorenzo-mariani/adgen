@@ -195,7 +195,6 @@ def create_enterprise_dcs(session, domain_name):
 
 
 def add_standard_edges(session, domain_name, dcou):
-    print("Adding Standard Edges")
     link_default_gpos(session, domain_name, dcou)
     create_enterprise_admins(session, domain_name)
     create_administrators(session, domain_name)
@@ -204,7 +203,6 @@ def add_standard_edges(session, domain_name, dcou):
 
 
 def add_domain_admin_to_local_admin(session, domain_sid):
-    print("Adding Domain Admins to Local Admins of Computers")
     session.run(
         """
         MATCH (n:Computer)
@@ -216,7 +214,6 @@ def add_domain_admin_to_local_admin(session, domain_sid):
 
 
 def add_local_admin_rights(session, groups, computers):
-    print("Adding local admin rights")
     it_groups = [x for x in groups if "IT" in x]
     random.shuffle(it_groups)
 
@@ -291,7 +288,6 @@ def add_local_admin_rights(session, groups, computers):
 
 
 def add_domain_admin_aces(session, domain_name, computers, users, groups):
-    print("Adding Domain Admin ACEs")
     group_name = "DOMAIN ADMINS@{}".format(domain_name)
     props = []
     for x in computers:

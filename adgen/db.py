@@ -50,6 +50,7 @@ def exit():
 
 def connect(entity):
     test_db_connection(entity)
+    print("Database Connection Successful!")
 
 
 def cleardb(entity, args):
@@ -75,7 +76,6 @@ def test_db_connection(entity):
     try:
         entity.driver = GraphDatabase.driver(entity.url, auth=(entity.username, entity.password))
         entity.connected = True
-        print("Database Connection Successful!")
     except Exception as err:
         entity.connected = False
         print("Connection Failed: {error}".format(error=err))
@@ -86,7 +86,7 @@ def generate(entity):
 
 
 def clear_and_generate(entity):
-    test_db_connection(entity)
+    connect(entity)
     cleardb(entity, "a")
     generate_data(entity)
 
@@ -109,7 +109,8 @@ def generate_data(entity):
 
     session = entity.driver.session()
 
-    data_generation(session, entity.domain, entity.sid, entity.nodes)
+    print("Starting data generation with nodes={}".format(entity.nodes))
+    data_generation(session, entity.domain, entity.sid)
 
     ddp = str(uuid.uuid4())
     ddcp = str(uuid.uuid4())
@@ -117,37 +118,64 @@ def generate_data(entity):
 
     create_default_gpos(session, entity.domain, ddp, ddcp)
     create_dcs_ous(session, entity.domain, dcou)
+
+    print("Adding Standard Edges")
     add_standard_edges(session, entity.domain, dcou)
 
-    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
-    dcs_props, ridcount = create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
-    user_props, users, ridcount = create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
+    print("Generating Computer Nodes")
+    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers,
+                                                            entity.clients_os)
 
+    print("Creating Domain Controllers")
+    dcs_props, ridcount = create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
+
+    print("Generating User Nodes")
+    user_props, users, ridcount = create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time,
+                                               entity.first_names, entity.last_names, users, ridcount)
+
+    print("Generating Group Nodes")
+    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount,
+                                                   entity.groups)
+
+    print("Adding Domain Admins to Local Admins of Computers")
     add_domain_admin_to_local_admin(session, entity.sid)
 
     das = add_domain_admins(session, entity.domain, entity.nodes, users)
 
+    print("Applying random group nesting")
     create_nested_groups(session, entity.nodes, groups)
 
+    print("Adding users to groups")
     it_users = add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
+
+    print("Adding local admin rights")
     it_groups = add_local_admin_rights(session, groups, computers)
 
+    print("Adding RDP/ExecuteDCOM/AllowedToDelegateTo")
     add_rdp_dcom_delegate(session, computers, it_users, it_groups)
+
+    print("Adding sessions")
     add_sessions(session, entity.nodes, computers, users, das)
+
+    print("Adding Domain Admin ACEs")
     add_domain_admin_aces(session, entity.domain, computers, users, groups)
 
-    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
-
+    print("Creating OUs")
+    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes,
+                                                 entity.ous)
+    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes,
+                                             entity.ous)
     link_ous_to_domain(session, entity.domain, ou_guid_map)
 
+    print("Creating GPOs")
     gpos = create_gpos(session, entity.domain, gpos)
-
     link_to_ous(session, gpos, entity.domain, ou_guid_map)
-
     add_outbound_acls(session, it_groups, it_users, gpos, computers, entity.acls)
+
+    print("Marking some users as Kerberoastable")
     add_kerberoastable_users(session, it_users)
+
+    print("Adding unconstrained delegation to a few computers")
     add_unconstrained_delegation(session, computers)
 
     session.run("MATCH (n:User) SET n.owned=false")

@@ -4,7 +4,6 @@ from adgen.utils.utils import cs, generate_timestamp
 
 
 def create_users(session, domain_name, domain_sid, num_nodes, current_time, first_names, last_names, users, ridcount):
-    print("Generating User Nodes")
     user_props = []
     group_name = "DOMAIN USERS@{}".format(domain_name)
     props = []
@@ -70,7 +69,6 @@ def create_users(session, domain_name, domain_sid, num_nodes, current_time, firs
 
 
 def add_kerberoastable_users(session, it_users):
-    print("Marking some users as Kerberoastable")
     i = random.randint(10, 20)
     i = min(i, len(it_users))
     for user in random.sample(it_users, i):

@@ -3,7 +3,8 @@ def print_commands():
 
 
 def print_help():
-    print("\n[clear_and_generate]" + "\t" * 2 + "Connect to the database, clear the db, set the schema, and generate random data")
+    print("\n[clear_and_generate]" + "\t" * 2 + "Connect to the database, clear the db, set the schema, and generate "
+                                                "random data")
     print("[cleardb]" + "\t" * 3 + "Clear the database and set constraints")
     print("[connect]" + "\t" * 3 + "Test connection to the database and verify credentials")
     print("[dbconfig]" + "\t" * 3 + "Configure database connection parameters")

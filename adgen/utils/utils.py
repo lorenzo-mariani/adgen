@@ -36,7 +36,7 @@ def split_seq(iterable, size):
 
 
 def get_list_from_pkl(args):
-    with open(os.path.abspath("adgen\data\\" + args), "rb") as f:
+    with open(os.path.abspath("adgen\\data\\" + args), "rb") as f:
         return pickle.load(f)
 
 
