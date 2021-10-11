@@ -13,19 +13,15 @@ def create_domain_nodes(session, domain_name, domain_sid):
 
 def create_domain_controllers(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name),
-                sid=cs(516, domain_sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name),
-                sid=cws("S-1-5-9", domain_sid))
-    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain_name),
-                sid=cs(498, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name), sid=cs(516, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name), sid=cws("S-1-5-9", domain_sid))
+    session.run(base_statement, gname=cn("ENTERPRISE READ-ONLY DOMAIN CONTROLLERS", domain_name), sid=cs(498, domain_sid))
 
 
 def create_administrators(session, domain_name, domain_sid):
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
     session.run(f"{base_statement},n.highvalue=true", gname=cn("ADMINISTRATORS", domain_name), sid=cs(544, domain_sid))
-    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name),
-                sid=cs(519, domain_sid))
+    session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name), sid=cs(519, domain_sid))
 
 
 def create_domain(session, domain_name, domain_sid):

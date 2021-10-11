@@ -31,7 +31,7 @@ def dbconfig(entity):
     print("\nNew Settings:")
     print_db_settings(entity.url, entity.username, entity.password)
     print("Testing DB Connection")
-    test_db_connection(entity)
+    connect(entity)
 
 
 def setnodes(entity):
@@ -97,12 +97,8 @@ def generate_data(entity):
         return
 
     computers = []
-    computers_props = []
-    dcs_props = []
     groups = []
-    groups_props = []
     users = []
-    user_props = []
     gpos = []
     ou_guid_map = {}
     ou_props = []
@@ -123,19 +119,16 @@ def generate_data(entity):
     add_standard_edges(session, entity.domain, dcou)
 
     print("Generating Computer Nodes")
-    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers,
-                                                            entity.clients_os)
+    computers_props, computers, ridcount = create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
 
     print("Creating Domain Controllers")
     dcs_props, ridcount = create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
 
     print("Generating User Nodes")
-    user_props, users, ridcount = create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time,
-                                               entity.first_names, entity.last_names, users, ridcount)
+    user_props, users, ridcount = create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
 
     print("Generating Group Nodes")
-    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount,
-                                                   entity.groups)
+    groups_props, groups, ridcount = create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
 
     print("Adding Domain Admins to Local Admins of Computers")
     add_domain_admin_to_local_admin(session, entity.sid)
@@ -161,10 +154,8 @@ def generate_data(entity):
     add_domain_admin_aces(session, entity.domain, computers, users, groups)
 
     print("Creating OUs")
-    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes,
-                                                 entity.ous)
-    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes,
-                                             entity.ous)
+    ou_props, ou_guid_map = create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
+    ou_props, ou_guid_map = create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
     link_ous_to_domain(session, entity.domain, ou_guid_map)
 
     print("Creating GPOs")
