@@ -1,11 +1,11 @@
 import os
 import pickle
+import random
 import time
-import uuid
 
 import adgen.db as db
 from neo4j import GraphDatabase
-from adgen.utils.utils import get_list_from_ini
+from adgen.utils.utils import get_list_from_ini, cs, cn
 from adgen.entities.entity import Entity
 
 
@@ -49,76 +49,309 @@ def test_connection():
     assert entity.connected is True
 
 
-def test_create_computers():
+def test_cleardb():
     entity = init_entity()
-    computers = []
 
     db.test_db_connection(entity)
     session = entity.driver.session()
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
 
-    assert len(computers) == entity.nodes
+    session.run("match (a) -[r] -> () delete a, r")  # delete all nodes with relationships
+    session.run("match (a) delete a")  # delete nodes that have no relationships
 
-
-def test_create_dcs():
-    entity = init_entity()
-    ridcount = 0
-    dcou = str(uuid.uuid4())
-
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    dcs_props, ridcount = db.create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
-
-    assert dcs_props is not None
+    result = []
+    for r in session.run("MATCH (n) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
 
 
-def test_create_users():
+def test_users():
     entity = init_entity()
     users = []
+    props = []
     ridcount = 0
 
     db.test_db_connection(entity)
     session = entity.driver.session()
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
+    db.cleardb(entity, "a")
+
+    result = []
+    for r in session.run("MATCH (n:User) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
+
+    for i in range(1, entity.nodes + 1):
+        first = random.choice(entity.first_names)
+        last = random.choice(entity.last_names)
+        user_name = "{}{}{:05d}@{}".format(first[0], last, i, entity.domain).upper()
+        user_name = user_name.format(first[0], last, i).upper()
+        users.append(user_name)
+        dispname = "{} {}".format(first, last)
+        ridcount += 1
+        objectsid = cs(ridcount, entity.sid)
+        user_properties = {
+            'id': objectsid,
+            'props': {
+                'displayname': dispname
+            }
+        }
+        props.append(user_properties)
+
+        if len(props) > 500:
+            session.run(
+                """
+                UNWIND $props as prop
+                MERGE (n:Base {objectid:prop.id})
+                SET n:User, n += prop.props
+                """,
+                props=props
+            )
+            props = []
+
+    session.run(
+        """
+        UNWIND $props as prop
+        MERGE (n:Base {objectid:prop.id})
+        SET n:User, n += prop.props
+        """,
+        props=props
+    )
 
     assert len(users) == entity.nodes
 
+    result = []
+    for r in session.run("MATCH (n:User) RETURN n"):
+        result.append(r)
+    assert len(result) == len(users)
 
-def test_create_groups():
-    entity = init_entity()
+    das = db.add_domain_admins(session, entity.domain, entity.nodes, users)
+
     groups = []
+    props = []
+    ridcount = 0
+
+    for i in range(1, entity.nodes + 1):
+        group = random.choice(entity.groups)
+        group_name = "{}{:05d}@{}".format(group, i, entity.domain)
+        groups.append(group_name)
+        sid = cs(ridcount, entity.sid)
+        ridcount += 1
+        group_props = {
+            "name": group_name,
+            "id": sid
+        }
+        props.append(group_props)
+
+        if len(props) > 500:
+            session.run(
+                """
+                UNWIND $props as prop
+                MERGE (n:Base {objectid:prop.id})
+                SET n:Group, n.name=prop.name
+                """,
+                props=props
+            )
+            props = []
+
+    session.run(
+        """
+        UNWIND $props as prop
+        MERGE (n:Base {objectid:prop.id})
+        SET n:Group, n.name=prop.name
+        """,
+        props=props
+    )
+
+    it_users = db.add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
+
+    result = []
+    for r in session.run("MATCH (n) WHERE (n.hasspn) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
+
+    i = random.randint(10, 20)
+    i = min(i, len(it_users))
+    for user in random.sample(it_users, i):
+        session.run(
+            """
+            MATCH (n:User {name:$user})
+            SET n.hasspn=true
+            """,
+            user=user
+        )
+
+    result = []
+    for r in session.run("MATCH (n) WHERE (n.hasspn) RETURN n"):
+        result.append(r)
+    assert len(result) != 0
+
+
+def test_computers():
+    entity = init_entity()
+    computers = []
+    props = []
     ridcount = 0
 
     db.test_db_connection(entity)
     session = entity.driver.session()
-    groups_props, groups, ridcount = db.create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
+    db.cleardb(entity, "a")
+
+    result = []
+    for r in session.run("MATCH (n:Computer) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
+
+    for i in range(1, entity.nodes + 1):
+        comp_name = "COMP{:05d}.{}".format(i, entity.domain)
+        computers.append(comp_name)
+        os = random.choice(entity.clients_os)
+        computer_props = {
+            "id": cs(ridcount, entity.sid),
+            "props": {
+                "name": comp_name,
+                "operatingsystem": os
+            }
+        }
+        props.append(computer_props)
+        ridcount += 1
+
+        if len(props) > 500:
+            session.run(
+                """
+                UNWIND $props as prop
+                MERGE (n:Base {objectid: prop.id})
+                SET n:Computer, n += prop.props
+                """,
+                props=props
+            )
+            props = []
+    session.run(
+        """
+        UNWIND $props as prop
+        MERGE (n:Base {objectid:prop.id})
+        SET n:Computer, n += prop.props
+        """,
+        props=props
+    )
+
+    assert len(computers) == entity.nodes
+
+    result = []
+    for r in session.run("MATCH (n:Computer) RETURN n"):
+        result.append(r)
+    assert len(result) == len(computers)
+
+    dcs = []
+
+    for ou in entity.ous:
+        comp_name = cn(f"{ou}LABDC", entity.domain)
+        sid = cs(ridcount, entity.sid)
+        os = random.choice(entity.servers_os)
+
+        dc_props = {
+            "name": comp_name,
+            "id": sid,
+            "operatingsystem": os,
+        }
+        ridcount += 1
+        dcs.append(dc_props)
+
+        session.run(
+            """
+            MERGE (n:Base {objectid:$sid})
+            SET n:Computer,n.name=$name, n.operatingsystem=$os
+            """,
+            sid=sid,
+            name=comp_name,
+            os=dc_props["operatingsystem"]
+        )
+
+    assert dcs is not None
+
+
+def test_groups():
+    entity = init_entity()
+    groups = []
+    props = []
+    ridcount = 0
+
+    db.test_db_connection(entity)
+    session = entity.driver.session()
+    db.cleardb(entity, "a")
+
+    result = []
+    for r in session.run("MATCH (n:Group) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
+
+    for i in range(1, entity.nodes + 1):
+        group = random.choice(entity.groups)
+        group_name = "{}{:05d}@{}".format(group, i, entity.domain)
+        groups.append(group_name)
+        sid = cs(ridcount, entity.sid)
+        ridcount += 1
+        group_props = {
+            "name": group_name,
+            "id": sid
+        }
+        props.append(group_props)
+
+        if len(props) > 500:
+            session.run(
+                """
+                UNWIND $props as prop
+                MERGE (n:Base {objectid:prop.id})
+                SET n:Group, n.name=prop.name
+                """,
+                props=props
+            )
+            props = []
+
+    session.run(
+        """
+        UNWIND $props as prop
+        MERGE (n:Base {objectid:prop.id})
+        SET n:Group, n.name=prop.name
+        """,
+        props=props
+    )
 
     assert len(groups) == entity.nodes
 
+    result = []
+    for r in session.run("MATCH (n:Group) RETURN n"):
+        result.append(r)
+    assert len(result) == len(groups)
 
-def test_create_gpos():
+
+def test_gpos():
     entity = init_entity()
     gpos = []
 
     db.test_db_connection(entity)
     session = entity.driver.session()
-    gpos = db.create_gpos(session, entity.domain, gpos)
+    db.cleardb(entity, "a")
+
+    result = []
+    for r in session.run("MATCH (n:GPO) RETURN n"):
+        result.append(r)
+    assert len(result) == 0
+
+    for i in range(1, 20):
+        gpo_name = "GPO_{}@{}".format(i, entity.domain)
+        session.run(
+            """
+            MERGE (n:Base {name:$gponame})
+            SET n:GPO
+            """,
+            gponame=gpo_name
+        )
+        gpos.append(gpo_name)
 
     assert len(gpos) != 0
 
+    result = []
 
-def test_create_ous():
-    entity = init_entity()
-    users = []
-    computers = []
-    ou_guid_map = {}
-    ou_props = []
+    for r in session.run("MATCH (n:GPO) RETURN n"):
+        result.append(r)
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    ou_props, ou_guid_map = db.create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    ou_props, ou_guid_map = db.create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
-
-    assert len(ou_props) == 2 * entity.nodes
+    assert len(result) == len(gpos)
