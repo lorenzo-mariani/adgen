@@ -6,6 +6,14 @@ from adgen.utils.utils import cn, split_seq
 
 
 def create_dcs_ous(session, domain_name, dcou):
+    """
+    Create OUs for domain controllers.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        dcou        -- the OU of domain controller
+    """
     session.run(
         """
         MERGE (n:Base {name:$ou, objectid:$guid, blocksInheritance: false})
@@ -17,6 +25,22 @@ def create_dcs_ous(session, domain_name, dcou):
 
 
 def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props, num_nodes, ous_list):
+    """
+    Create OUs for computers.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        computers   -- a list containing the various computers
+        ou_guid_map -- a map of OUs guid
+        ou_props    -- a list containing the properties of the various OUs
+        num_nodes   -- the number of nodes
+        ous_list    -- a list containing the names of the various OUs
+
+    Returns:
+        ou_props    -- a list containing the properties of the various OUs
+        ou_guid_map -- a map of OUs guid
+    """
     temp_comps = computers
     random.shuffle(temp_comps)
     num_ous = len(ous_list)
@@ -65,6 +89,22 @@ def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props,
 
 
 def create_users_ous(session, domain_name, users, ou_guid_map, ou_props, num_nodes, ous_list):
+    """
+    Create OUs for users.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        users       -- a list containing the various users
+        ou_guid_map -- a map of OUs guid
+        ou_props    -- a list containing the properties of the various OUs
+        num_nodes   -- the number of nodes
+        ous_list    -- a list containing the names of the various OUs
+
+    Returns:
+        ou_props    -- a list containing the properties of the various OUs
+        ou_guid_map -- a map of OUs guid
+    """
     temp_users = users
     random.shuffle(temp_users)
     num_ous = len(ous_list)
@@ -117,6 +157,14 @@ def create_users_ous(session, domain_name, users, ou_guid_map, ou_props, num_nod
 
 
 def link_ous_to_domain(session, domain_name, ou_guid_map):
+    """
+    Links the OUs to the domain
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        ou_guid_map -- a map of OUs guid
+    """
     props = []
     for x in list(ou_guid_map.keys()):
         guid = ou_guid_map[x]

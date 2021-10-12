@@ -7,7 +7,7 @@ def run(args):
     This function executes the run mode.
 
     Arguments:
-    args -- the list of arguments passed from the command line
+        args -- the list of arguments passed from the command line
     """
     run_entity = initialize(args)
 

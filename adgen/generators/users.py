@@ -4,6 +4,25 @@ from adgen.utils.utils import cs, generate_timestamp
 
 
 def create_users(session, domain_name, domain_sid, num_nodes, current_time, first_names, last_names, users, ridcount):
+    """
+    Creates the user nodes.
+
+    Arguments:
+        session      -- the current session
+        domain_name  -- the domain name
+        domain_sid   -- the domain sid
+        num_nodes    -- the number of nodes
+        current_time -- the current time
+        first_names  -- a list of first names that can be used for a user
+        last_names   -- a list of last names that can be used for a user
+        users        -- a vector containing that will contain the usernames of the various users
+        ridcount     -- the current rid value
+
+    Returns:
+        user_props -- a vector containing the properties of the various users
+        users      -- a vector containing the usernames of the various users
+        ridcount   -- the new rid value
+    """
     user_props = []
     group_name = "DOMAIN USERS@{}".format(domain_name)
     props = []
@@ -69,6 +88,13 @@ def create_users(session, domain_name, domain_sid, num_nodes, current_time, firs
 
 
 def add_kerberoastable_users(session, it_users):
+    """
+    Makes some users vulnerable to a kerberoast attack.
+
+    Arguments:
+        session  -- the current session
+        it_users -- a list of it users
+    """
     i = random.randint(10, 20)
     i = min(i, len(it_users))
     for user in random.sample(it_users, i):

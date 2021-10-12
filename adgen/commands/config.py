@@ -7,7 +7,7 @@ def config(args):
     This function executes the config mode.
 
     Arguments:
-    args -- the list of arguments passed from the command line
+        args -- the list of arguments passed from the command line
     """
     config_entity = initialize(args)
 

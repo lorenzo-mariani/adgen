@@ -19,8 +19,8 @@ def input_default(prompt, default):
     Prompts you to enter parameters from the command line.
 
     Arguments:
-    prompt  -- the message to prompt
-    default -- the default value to use if you do not want to change the parameter
+        prompt  -- the message to prompt
+        default -- the default value to use if you do not want to change the parameter
     """
     return input("%s [%s] " % (prompt, default)) or default
 
@@ -36,7 +36,7 @@ def dbconfig(entity):
     and password of an entity.
 
     Arguments:
-    entity -- the entity to which to configure the URL, username and password
+        entity -- the entity to which to configure the URL, username and password
     """
     print("Current settings:")
     print_db_settings(entity.url, entity.username, entity.password)
@@ -54,7 +54,7 @@ def setnodes(entity):
     This function allows you to configure the nodes of an entity.
 
     Arguments:
-    entity -- the entity to which to configure the nodes
+        entity -- the entity to which to configure the nodes
     """
     entity.nodes = int(input_default("Number of nodes of each type to generate", entity.nodes))
 
@@ -64,7 +64,7 @@ def setdomain(entity):
     This function allows you to configure the domain of an entity.
 
     Arguments:
-    entity -- the entity to which to configure the domain
+        entity -- the entity to which to configure the domain
     """
     entity.domain = input_default("Domain", entity.domain).upper()
     print("\nNew Settings:")
@@ -81,7 +81,7 @@ def connect(entity):
     Connects to the database.
 
     Arguments:
-    entity -- the entity used to connect to the database
+        entity -- the entity used to connect to the database
     """
     test_db_connection(entity)
     print("Database Connection Successful!")
@@ -92,9 +92,8 @@ def cleardb(entity, args):
     Clears the database.
 
     Arguments:
-    entity -- the entity containing information about the database
-              connection
-    args   -- the information about the current session
+        entity -- the entity containing information about the database connection
+        args   -- the information about the current session
     """
     if not entity.connected:
         print("Not connected to database. Use connect first")
@@ -116,7 +115,7 @@ def test_db_connection(entity):
     Tests the database connection.
 
     Arguments:
-    entity -- the entity used to connect to the database
+        entity -- the entity used to connect to the database
     """
     entity.connected = False
     if entity.driver is not None:
@@ -134,9 +133,8 @@ def clear_and_generate(entity):
     Clears the database and generates random data.
 
     Arguments:
-    entity -- the entity containing information about the database
-              connection and the parameters to be used for data
-              generation
+        entity -- the entity containing information about the database
+                  connection and the parameters to be used for data generation
     """
     connect(entity)
     cleardb(entity, "a")
@@ -148,8 +146,8 @@ def generate_data(entity):
     Generates random data.
 
     Arguments:
-    entity -- the entity containing information about the
-              parameters to be used for data generation
+        entity -- the entity containing information about the
+                  parameters to be used for data generation
     """
     if not entity.connected:
         print("Not connected to the database")

@@ -9,12 +9,11 @@ def parse_args(args):
     It returns an argparse Namespace object.
 
     Arguments:
-    args -- the list of arguments passed from the command line as the sys.argv
-            format
+        args -- the list of arguments passed from the command line as the sys.argv format
 
     Returns:
-    An argparse Namespace object with the provided arguments, which
-    can be used in a simpler format.
+        An argparse Namespace object with the provided arguments, which
+        can be used in a simpler format.
     """
     parser = argparse.ArgumentParser(prog='adgen', description='An Active Directory generator')
 

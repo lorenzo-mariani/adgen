@@ -8,10 +8,10 @@ def initialize(args):
     Initialize an Entity with the provided configuration.
 
     Arguments:
-    args -- the list of arguments passed from the command line
+        args -- the list of arguments passed from the command line
 
     Returns:
-    The Entity with the provided configuration.
+        The Entity with the provided configuration.
     """
     ent = Entity()
     ent.current_time = DEFAULT_CONFIG.get('current_time')
