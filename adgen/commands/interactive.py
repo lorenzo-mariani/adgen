@@ -1,4 +1,4 @@
-from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setdomain, clear_and_generate, generate
+from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setdomain, clear_and_generate, generate_data
 from adgen.initializer import initialize
 from adgen.utils.printer import print_commands
 
@@ -36,7 +36,7 @@ def interactive(args):
             elif command == "clear_and_generate":
                 clear_and_generate(interactive_entity)
             elif command == "generate":
-                generate(interactive_entity)
+                generate_data(interactive_entity)
             else:
                 print(command + " does not exist!\n")
         except KeyboardInterrupt:

@@ -1,5 +1,5 @@
 from adgen.initializer import initialize
-from adgen.db import connect, generate
+from adgen.db import connect, generate_data
 
 
 def config(args):
@@ -12,4 +12,4 @@ def config(args):
     config_entity = initialize(args)
 
     connect(config_entity)
-    generate(config_entity)
+    generate_data(config_entity)
