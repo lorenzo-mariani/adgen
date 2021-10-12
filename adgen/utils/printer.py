@@ -1,6 +1,18 @@
 def print_commands():
     """Prints the commands available in interactive mode."""
-    print("\n[clear_and_generate] [cleardb] [connect] [dbconfig] [exit] [generate] [help] [setdomain] [setnodes]\n")
+    print(
+        """
+===================================================
+                 CHOOSE A COMMAND:
+
+  1 - [clear_and_generate]          6 - [generate]
+  2 - [cleardb]                     7 - [help]
+  3 - [connect]                     8 - [setdomain]
+  4 - [dbconfig]                    9 - [setnodes]
+  5 - [exit]
+===================================================
+    """
+    )
 
 
 def print_help():
