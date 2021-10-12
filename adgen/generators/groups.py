@@ -5,6 +5,14 @@ from adgen.utils.utils import cn, cs, cws
 
 
 def create_domain_nodes(session, domain_name, domain_sid):
+    """
+    Creates the domain nodes.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        domain_sid  -- the domain sid
+    """
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
     session.run(f"{base_statement},n.highvalue=true", sid=cs(512, domain_sid), gname=cn("DOMAIN ADMINS", domain_name))
     session.run(base_statement, sid=cs(515, domain_sid), gname=cn("DOMAIN COMPUTERS", domain_name))
@@ -12,6 +20,14 @@ def create_domain_nodes(session, domain_name, domain_sid):
 
 
 def create_domain_controllers(session, domain_name, domain_sid):
+    """
+    Creates the domain controllers.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        domain_sid  -- the domain sid
+    """
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
     session.run(f"{base_statement},n.highvalue=true", gname=cn("DOMAIN CONTROLLERS", domain_name), sid=cs(516, domain_sid))
     session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE DOMAIN CONTROLLERS", domain_name), sid=cws("S-1-5-9", domain_sid))
@@ -19,12 +35,28 @@ def create_domain_controllers(session, domain_name, domain_sid):
 
 
 def create_administrators(session, domain_name, domain_sid):
+    """
+    Creates the administrators.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        domain_sid  -- the domain sid
+    """
     base_statement = "MERGE (n:Base {name: $gname}) SET n:Group, n.objectid=$sid"
     session.run(f"{base_statement},n.highvalue=true", gname=cn("ADMINISTRATORS", domain_name), sid=cs(544, domain_sid))
     session.run(f"{base_statement},n.highvalue=true", gname=cn("ENTERPRISE ADMINS", domain_name), sid=cs(519, domain_sid))
 
 
 def create_domain(session, domain_name, domain_sid):
+    """
+    Creates the domain.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        domain_sid  -- the domain sid
+    """
     session.run(
         """
         MERGE (n:Base {name:$domain})
@@ -43,6 +75,22 @@ def data_generation(session, domain_name, domain_sid):
 
 
 def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount, groups_list):
+    """
+    Creates groups.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        domain_sid  -- the domain sid
+        num_nodes   -- the number of nodes
+        groups      -- a list containing the various groups
+        ridcount    -- the current rid value
+
+    Returns:
+        group_props_list -- a list containing the properties of the various groups
+        groups           -- a list containing the various groups
+        ridcount         -- th new rid value
+    """
     props = []
     group_props_list = []
 
@@ -82,6 +130,18 @@ def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount,
 
 
 def add_domain_admins(session, domain_name, num_nodes, users):
+    """
+    Create domain administrators.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        num_nodes   -- the number of nodes
+        users       -- a list containing the various users
+
+    Returns:
+        das -- domain administrators
+    """
     dapctint = random.randint(3, 5)
     dapct = float(dapctint) / 100
     danum = int(math.ceil(num_nodes * dapct))
@@ -104,6 +164,14 @@ def add_domain_admins(session, domain_name, num_nodes, users):
 
 
 def create_nested_groups(session, num_nodes, groups):
+    """
+    Create nested groups.
+
+    Arguments:
+        session   -- the current session
+        num_nodes -- the number of nodes
+        groups    -- a list containing the various groups
+    """
     max_nest = int(round(math.log10(num_nodes)))
     props = []
 
@@ -146,6 +214,20 @@ def create_nested_groups(session, num_nodes, groups):
 
 
 def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
+    """
+    Adds users to groups.
+
+    Arguments:
+        session     -- the current session
+        num_nodes   -- the number of nodes
+        users       -- a list containing the various users
+        groups      -- a list containing the various groups
+        das         -- domain administrators
+        groups_list -- a list containing the available groups
+
+    Returns:
+        it_users -- a list containing the various users inside a group
+    """
     props = []
     a = math.log10(num_nodes)
     a = math.pow(a, 2)
