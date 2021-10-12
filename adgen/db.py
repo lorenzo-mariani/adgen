@@ -16,7 +16,7 @@ from adgen.utils.printer import print_help, print_db_settings
 
 def input_default(prompt, default):
     """
-    Prompts you to enter parameters from the command line
+    Prompts you to enter parameters from the command line.
 
     Arguments:
     prompt  -- the message to prompt
@@ -26,7 +26,7 @@ def input_default(prompt, default):
 
 
 def help():
-    """Print help messages"""
+    """Print help messages."""
     print_help()
 
 
@@ -72,13 +72,13 @@ def setdomain(entity):
 
 
 def exit():
-    """Exits the program"""
+    """Exits the program."""
     sys.exit(1)
 
 
 def connect(entity):
     """
-    Connect to the database
+    Connects to the database.
 
     Arguments:
     entity -- the entity used to connect to the database
@@ -89,7 +89,7 @@ def connect(entity):
 
 def cleardb(entity, args):
     """
-    Clears the database
+    Clears the database.
 
     Arguments:
     entity -- the entity containing information about the database
@@ -113,7 +113,7 @@ def cleardb(entity, args):
 
 def test_db_connection(entity):
     """
-    Tests the database connection
+    Tests the database connection.
 
     Arguments:
     entity -- the entity used to connect to the database
@@ -129,20 +129,9 @@ def test_db_connection(entity):
         print("Connection Failed: {error}".format(error=err))
 
 
-def generate(entity):
-    """
-    Calls generate_data() to generate random data
-
-    Arguments:
-    entity -- the entity containing information about the
-              parameters to be used for data generation
-    """
-    generate_data(entity)
-
-
 def clear_and_generate(entity):
     """
-    Clears the database and generates random data
+    Clears the database and generates random data.
 
     Arguments:
     entity -- the entity containing information about the database
@@ -156,7 +145,7 @@ def clear_and_generate(entity):
 
 def generate_data(entity):
     """
-    Generates random data
+    Generates random data.
 
     Arguments:
     entity -- the entity containing information about the
