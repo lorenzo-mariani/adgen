@@ -15,14 +15,29 @@ from adgen.utils.printer import print_help, print_db_settings
 
 
 def input_default(prompt, default):
+    """
+    Prompts you to enter parameters from the command line
+
+    Arguments:
+    prompt  -- the message to prompt
+    default -- the default value to use if you do not want to change the parameter
+    """
     return input("%s [%s] " % (prompt, default)) or default
 
 
 def help():
+    """Print help messages"""
     print_help()
 
 
 def dbconfig(entity):
+    """
+    This function allows you to configure the URL, username
+    and password of an entity.
+
+    Arguments:
+    entity -- the entity to which to configure the URL, username and password
+    """
     print("Current settings:")
     print_db_settings(entity.url, entity.username, entity.password)
     entity.url = input_default("Enter DB URL", entity.url)
@@ -35,25 +50,52 @@ def dbconfig(entity):
 
 
 def setnodes(entity):
+    """
+    This function allows you to configure the nodes of an entity.
+
+    Arguments:
+    entity -- the entity to which to configure the nodes
+    """
     entity.nodes = int(input_default("Number of nodes of each type to generate", entity.nodes))
 
 
 def setdomain(entity):
+    """
+    This function allows you to configure the domain of an entity.
+
+    Arguments:
+    entity -- the entity to which to configure the domain
+    """
     entity.domain = input_default("Domain", entity.domain).upper()
     print("\nNew Settings:")
     print("Domain: {}".format(entity.domain))
 
 
 def exit():
+    """Exits the program"""
     sys.exit(1)
 
 
 def connect(entity):
+    """
+    Connect to the database
+
+    Arguments:
+    entity -- the entity used to connect to the database
+    """
     test_db_connection(entity)
     print("Database Connection Successful!")
 
 
 def cleardb(entity, args):
+    """
+    Clears the database
+
+    Arguments:
+    entity -- the entity containing information about the database
+              connection
+    args   -- the information about the current session
+    """
     if not entity.connected:
         print("Not connected to database. Use connect first")
         return
@@ -70,6 +112,12 @@ def cleardb(entity, args):
 
 
 def test_db_connection(entity):
+    """
+    Tests the database connection
+
+    Arguments:
+    entity -- the entity used to connect to the database
+    """
     entity.connected = False
     if entity.driver is not None:
         entity.driver.close()
@@ -82,16 +130,38 @@ def test_db_connection(entity):
 
 
 def generate(entity):
+    """
+    Calls generate_data() to generate random data
+
+    Arguments:
+    entity -- the entity containing information about the
+              parameters to be used for data generation
+    """
     generate_data(entity)
 
 
 def clear_and_generate(entity):
+    """
+    Clears the database and generates random data
+
+    Arguments:
+    entity -- the entity containing information about the database
+              connection and the parameters to be used for data
+              generation
+    """
     connect(entity)
     cleardb(entity, "a")
     generate_data(entity)
 
 
 def generate_data(entity):
+    """
+    Generates random data
+
+    Arguments:
+    entity -- the entity containing information about the
+              parameters to be used for data generation
+    """
     if not entity.connected:
         print("Not connected to the database")
         return
