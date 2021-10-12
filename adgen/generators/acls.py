@@ -6,6 +6,13 @@ from adgen.utils.utils import cs
 
 
 def create_enterprise_admins(session, domain_name):
+    """
+    Creates enterprise administrators.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+    """
     group_name = "ENTERPRISE ADMINS@{}".format(domain_name)
     session.run(
         """
@@ -19,6 +26,13 @@ def create_enterprise_admins(session, domain_name):
 
 
 def create_administrators(session, domain_name):
+    """
+    Creates administrators.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+    """
     group_name = "ADMINISTRATORS@{}".format(domain_name)
     session.run(
         """
@@ -92,6 +106,13 @@ def create_administrators(session, domain_name):
 
 
 def create_domain_admins(session, domain_name):
+    """
+    Creates domain administrators.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+    """
     group_name = "DOMAIN ADMINS@{}".format(domain_name)
     session.run(
         """
@@ -154,6 +175,13 @@ def create_domain_admins(session, domain_name):
 
 
 def create_enterprise_dcs(session, domain_name):
+    """
+    Creates enterprise controllers.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+    """
     group_name = "ENTERPRISE DOMAIN CONTROLLERS@{}".format(domain_name)
     session.run(
         """
@@ -203,6 +231,13 @@ def add_standard_edges(session, domain_name, dcou):
 
 
 def add_domain_admin_to_local_admin(session, domain_sid):
+    """
+    Adds domain administrator to local administrators.
+
+    Arguments:
+        session    -- the current session
+        domain_sid -- the domain sid
+    """
     session.run(
         """
         MATCH (n:Computer)
@@ -214,6 +249,17 @@ def add_domain_admin_to_local_admin(session, domain_sid):
 
 
 def add_local_admin_rights(session, groups, computers):
+    """
+    Adds local admin rights.
+
+    Arguments:
+        session   -- the current session
+        groups    -- a list containing the various groups
+        computers -- a list containing the various computers
+
+    Returns:
+        it_groups -- a list of it groups
+    """
     it_groups = [x for x in groups if "IT" in x]
     random.shuffle(it_groups)
 
@@ -288,6 +334,16 @@ def add_local_admin_rights(session, groups, computers):
 
 
 def add_domain_admin_aces(session, domain_name, computers, users, groups):
+    """
+    Add domain admin ACEs.
+
+    Arguments:
+        session     -- the current session
+        domain_name -- the domain name
+        computers   -- a list containing the various computers
+        users       -- a list containing the various users
+        groups      -- a list containing the various groups
+    """
     group_name = "DOMAIN ADMINS@{}".format(domain_name)
     props = []
     for x in computers:
@@ -385,6 +441,17 @@ def add_domain_admin_aces(session, domain_name, computers, users, groups):
 
 
 def add_outbound_acls(session, it_groups, it_users, gpos, computers, acl_list):
+    """
+    Adds outbound ACLs.
+
+    Arguments:
+        session -- the current session
+        it_groups -- a list of it groups
+        it_users  -- a list of it users
+        gpos      -- a list containing the various GPOs
+        computers -- a list containing the various computers
+        acl_list  -- a list of available ACLs
+    """
     num_acl_principals = int(round(len(it_groups) * .1))
     print("Adding outbound ACLs to {} objects".format(num_acl_principals))
     acl_groups = random.sample(it_groups, num_acl_principals)

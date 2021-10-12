@@ -5,6 +5,22 @@ from adgen.utils.utils import cn, cs
 
 
 def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list):
+    """
+    Creates computer nodes.
+
+    Arguments:
+        session        -- the current session
+        domain_name    -- the domain name
+        domain_sid     -- the domain sid
+        num_nodes      -- the number of nodes
+        computers      -- a list containing the various computers
+        client_os_list -- a list of available client operating systems
+
+    Returns:
+        computer_props_list -- a list containing the properties of the various computers
+        computers           -- a list containing the various computers
+        ridcount            -- the new rid value
+    """
     computer_props_list = []
     group_name = "DOMAIN COMPUTERS@{}".format(domain_name)
     props = []
@@ -59,6 +75,22 @@ def create_computers(session, domain_name, domain_sid, num_nodes, computers, cli
 
 
 def create_dcs(session, domain_name, domain_sid, dcou, ridcount, server_os_list, ous_list):
+    """
+    Creates the domain controllers.
+
+    Arguments:
+        session -- the current session
+        domain_name -- the domain name
+        domain_sid -- the domain sid
+        dcou -- the domain controller OU
+        ridcount -- the current rid value
+        server_os_list -- a list of available client operating systems
+        ous_list -- a list of available OUs
+
+    Returns:
+        dc_props_list -- a list containing the properties of the domain controllers
+        ridcount     -- the new rid value
+    """
     dc_props_list = []
 
     for ou in ous_list:
@@ -132,6 +164,15 @@ def create_dcs(session, domain_name, domain_sid, dcou, ridcount, server_os_list,
 
 
 def add_rdp_users(session, computers, it_users, count):
+    """"
+    Add RDP to users.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+        it_users  -- a list of it users
+        count     -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -150,6 +191,15 @@ def add_rdp_users(session, computers, it_users, count):
 
 
 def add_rdp_groups(session, computers, it_groups, count):
+    """"
+    Add RDP to groups.
+
+    Arguments:
+        session    -- the current session
+        computers  -- a list containing the various computers
+        it_groups  -- a list of it groups
+        count      -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -168,6 +218,15 @@ def add_rdp_groups(session, computers, it_groups, count):
 
 
 def add_execute_dcom_users(session, computers, it_users, count):
+    """
+    Adds execute DCOM to users.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+        it_users  -- a list of it users
+        count     -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -186,6 +245,15 @@ def add_execute_dcom_users(session, computers, it_users, count):
 
 
 def add_execute_dcom_groups(session, computers, it_groups, count):
+    """
+    Adds execute DCOM to groups.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+        it_groups  -- a list of it groups
+        count     -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -204,6 +272,15 @@ def add_execute_dcom_groups(session, computers, it_groups, count):
 
 
 def add_allowed_to_delegate_to_users(session, computers, it_users, count):
+    """
+    Adds allowed to delegate to users.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+        it_users  -- a list of it users
+        count     -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -222,6 +299,14 @@ def add_allowed_to_delegate_to_users(session, computers, it_users, count):
 
 
 def add_allowed_to_delegate_to_computers(session, computers, count):
+    """
+    Adds allowed to delegate to computers.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+        count     -- an int value used for the iterations
+    """
     props = []
     for i in range(0, count):
         comp = random.choice(computers)
@@ -252,6 +337,16 @@ def add_rdp_dcom_delegate(session, computers, it_users, it_groups):
 
 
 def add_sessions(session, num_nodes, computers, users, das):
+    """
+    Adds sessions.
+
+    Arguments:
+        session   -- the current session
+        num_nodes -- the number of nodes
+        computers -- a list containing the various computers
+        users     -- a list containing the various users
+        das       -- domain administrators
+    """
     max_sessions_per_user = int(math.ceil(math.log10(num_nodes)))
     props = []
     for user in users:
@@ -293,6 +388,13 @@ def add_sessions(session, num_nodes, computers, users, das):
 
 
 def add_unconstrained_delegation(session, computers):
+    """
+    Add unconstrained delegation to some computers.
+
+    Arguments:
+        session   -- the current session
+        computers -- a list containing the various computers
+    """
     i = random.randint(10, 20)
     i = min(i, len(computers))
     for computer in random.sample(computers, i):

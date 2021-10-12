@@ -226,7 +226,7 @@ def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
         groups_list -- a list containing the available groups
 
     Returns:
-        it_users -- a list containing the various users inside a group
+        it_users -- a list of it users
     """
     props = []
     a = math.log10(num_nodes)
