@@ -2,7 +2,6 @@ import time
 import os
 from adgen.utils.utils import get_list_from_pkl, get_list_from_ini
 
-# default_path = os.path.abspath("adgen\\data\\default_config.ini")
 default_path = os.path.join(os.path.abspath('adgen'), 'data', 'default_config.ini')
 
 DEFAULT_CONFIG = {
