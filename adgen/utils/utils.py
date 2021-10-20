@@ -92,8 +92,15 @@ def get_list_from_pkl(args):
     Returns:
         The list inside the .pkl file
     """
+    path = os.path.join(os.path.abspath('adgen'), 'data', args)
+
+    with open(path, "rb") as f:
+        return pickle.load(f)
+
+    """
     with open(os.path.abspath("adgen\\data\\" + args), "rb") as f:
         return pickle.load(f)
+    """
 
 
 def get_list_from_ini(list_name, path):
