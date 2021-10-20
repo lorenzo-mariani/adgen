@@ -9,13 +9,14 @@ from adgen.utils.utils import get_list_from_ini, cs, cn
 from adgen.entities.entity import Entity
 
 
-def get_names(path):
+def get_names(args):
+    path = os.path.join(os.path.abspath(''), 'adgen', 'data', args)
     with open(path, "rb") as f:
         return pickle.load(f)
 
 
 def init_entity():
-    data_path = os.path.abspath("..\\adgen\\data")
+    data_path = os.path.join(os.path.abspath(''), 'adgen', 'data', 'default_config.ini')
     entity = Entity()
     entity.url = 'bolt://localhost:7687'
     entity.username = 'neo4j'
@@ -26,13 +27,13 @@ def init_entity():
     entity.domain = 'TESTLAB.LOCAL'
     entity.sid = 'S-1-5-21-883232822-274137685-4173207997'
     entity.current_time = int(time.time())
-    entity.first_names = get_names(data_path + "\\first.pkl")
-    entity.last_names = get_names(data_path + "\\last.pkl")
-    entity.clients_os = get_list_from_ini("CLIENTS", data_path + "\\default_config.ini")
-    entity.servers_os = get_list_from_ini("SERVERS", data_path + "\\default_config.ini")
-    entity.acls = get_list_from_ini("ACLS", data_path + "\\default_config.ini")
-    entity.groups = get_list_from_ini("GROUPS", data_path + "\\default_config.ini")
-    entity.ous = get_list_from_ini("OUS", data_path + "\\default_config.ini")
+    entity.first_names = get_names('first.pkl')
+    entity.last_names = get_names('last.pkl')
+    entity.clients_os = get_list_from_ini("CLIENTS", data_path)
+    entity.servers_os = get_list_from_ini("SERVERS", data_path)
+    entity.acls = get_list_from_ini("ACLS", data_path)
+    entity.groups = get_list_from_ini("GROUPS", data_path)
+    entity.ous = get_list_from_ini("OUS", data_path)
 
     return entity
 
