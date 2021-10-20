@@ -109,7 +109,7 @@ _param_config.ini_ contains the list of client/server operating systems (along w
 
 To use config mode type:
 
-    adgen config --conn </path/to/conn_config.ini> --param </path/to/os_config.ini>
+    adgen config --conn </path/to/conn_config.ini> --param </path/to/param_config.ini>
 
 ## COPYRIGHT
 
