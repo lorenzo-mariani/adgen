@@ -1,7 +1,7 @@
 [run]
 omit =
-    adgen/commands/*
-    adgen/utils/__init__.py
+	adgen/commands/*
+	adgen/utils/__init__.py
 	adgen/utils/printer.py
 	adgen/__init__.py
 	adgen/__main__.py
