@@ -100,8 +100,7 @@ def cleardb(entity, args):
         return
 
     print("Clearing Database")
-    d = entity.driver
-    session = d.session()
+    session = entity.driver.session()
 
     session.run("match (a) -[r] -> () delete a, r")  # delete all nodes with relationships
     session.run("match (a) delete a")  # delete nodes that have no relationships
@@ -128,7 +127,7 @@ def test_db_connection(entity):
         print("Connection Failed: {error}".format(error=err))
 
 
-def clear_and_generate(entity):
+def clear_and_generate(entity):  # pragma: no cover
     """
     Clears the database and generates random data.
 
@@ -141,7 +140,7 @@ def clear_and_generate(entity):
     generate_data(entity)
 
 
-def generate_data(entity):
+def generate_data(entity):  # pragma: no cover
     """
     Generates random data.
 
