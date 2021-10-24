@@ -7,10 +7,10 @@ default_path = os.path.join(os.path.abspath('adgen'), 'data', 'default_config.in
 DEFAULT_CONFIG = {
     'url': 'bolt://localhost:7687',
     'username': 'neo4j',
-    'password': 'neo4jj',
+    'password': 'neo4jpwd',
     'driver': None,
     'connected': False,
-    'nodes': 500,
+    'nodes': 600,
     'domain': 'TESTLAB.LOCAL',
     'current_time': int(time.time()),
     'sid': 'S-1-5-21-883232822-274137685-4173207997',
