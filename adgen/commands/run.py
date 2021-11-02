@@ -1,5 +1,8 @@
+import os
+
 from adgen.initializer import initialize
-from adgen.db import connect, generate_data
+from adgen.db import clear_and_generate
+from adgen.utils.utils import check_parameters
 
 
 def run(args):
@@ -9,7 +12,13 @@ def run(args):
     Arguments:
         args -- the list of arguments passed from the command line
     """
-    run_entity = initialize(args)
+    path_to_check = os.path.join(os.path.abspath('adgen'), 'data', 'default_config.ini')
+    check = check_parameters(path_to_check)
 
-    connect(run_entity)
-    generate_data(run_entity)
+    if check == 0:
+        run_entity = initialize(args)
+        clear_and_generate(run_entity)
+    elif check == -1:
+        raise Exception(f"Reading from File: {path_to_check} seems to return incorrect sections")
+    elif check == -2:
+        raise Exception(f"Reading from File: {path_to_check} seems to return wrong values of a section")
