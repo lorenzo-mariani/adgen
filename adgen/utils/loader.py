@@ -85,7 +85,8 @@ def check_parameters(path):
     Returns:
          0 -- everything is ok
         -1 -- sections are incorrect
-        -2 -- the sum of the options in a section is not equal to 100
+        -2 -- the sum of the options in a section is not
+              equal to 100 or there is a value lower than 0
     """
     config = ConfigParser()
     config.optionxform = str
@@ -110,6 +111,8 @@ def check_parameters(path):
         sum = 0
 
         for opt in config.options(section):
+            if config.getint(section, opt) < 0:
+                return -2
             sum += config.getint(section, opt)
 
         if sum != 100:
