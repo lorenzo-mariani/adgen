@@ -147,3 +147,50 @@ def get_value_from_ini(list_name, opt_name, path):
         return (config.get(section, opt_name)).upper()
     else:
         return config.get(section, opt_name)
+
+
+def check_parameters(path):
+    """
+    This function performs checks on the sections within a .ini file.
+        - It checks if all the sections are present correctly
+        - Since the values of the options in a section represent
+          the probability of having that detarminate option, it checks
+          whether the sum of the values is equal to 100%
+
+    Arguments:
+        path -- the name of the .ini file
+
+    Returns:
+         0 -- everything is ok
+        -1 -- sections are incorrect
+        -2 -- the sum of the options in a section is not equal to 100
+    """
+    config = ConfigParser()
+    config.optionxform = str
+
+    if not config.read(path):
+        raise Exception(f"Reading from File: {path} seems to return and empty object")
+    else:
+        config.read(path)
+
+    sections_found = config.sections()
+    sections_found.sort()
+
+    sections_to_have = ['CLIENTS', 'SERVERS', 'ACLS', 'GROUPS', 'OUS']
+    sections_to_have.sort()
+
+    if sections_found != sections_to_have:
+        return -1
+
+    sections_found.remove('OUS')
+
+    for section in sections_found:
+        sum = 0
+
+        for opt in config.options(section):
+            sum += config.getint(section, opt)
+
+        if sum != 100:
+            return -2
+
+    return 0
