@@ -1,7 +1,7 @@
 import random
 import uuid
 
-from adgen.utils.utils import cn
+from adgen.utils.support_functions import cn
 
 
 def create_default_gpos(session, domain_name, ddp, ddcp):

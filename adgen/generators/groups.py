@@ -1,7 +1,7 @@
 import math
 import random
 
-from adgen.utils.utils import cn, cs, cws
+from adgen.utils.support_functions import cn, cs, cws
 
 
 def create_domain_nodes(session, domain_name, domain_sid):

@@ -1,7 +1,7 @@
 import math
 import random
 
-from adgen.utils.utils import cn, cs
+from adgen.utils.support_functions import cn, cs
 
 
 def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list):

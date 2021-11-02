@@ -2,7 +2,7 @@ import random
 import math
 
 from adgen.generators.gpos import link_default_gpos
-from adgen.utils.utils import cs
+from adgen.utils.support_functions import cs
 
 
 def create_enterprise_admins(session, domain_name):

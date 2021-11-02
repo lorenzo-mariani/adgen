@@ -1,6 +1,6 @@
 import random
 
-from adgen.utils.utils import cs, generate_timestamp
+from adgen.utils.support_functions import cs, generate_timestamp
 
 
 def create_users(session, domain_name, domain_sid, num_nodes, current_time, first_names, last_names, users, ridcount):

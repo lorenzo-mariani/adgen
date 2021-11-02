@@ -2,7 +2,7 @@ import random
 import math
 import uuid
 
-from adgen.utils.utils import cn, split_seq
+from adgen.utils.support_functions import cn, split_seq
 
 
 def create_dcs_ous(session, domain_name, dcou):
