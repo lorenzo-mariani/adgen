@@ -107,6 +107,8 @@ _param_config.ini_ contains the list of client/server operating systems (along w
     AL = 4
     ...
 
+**NOTE!** Except for OUs, for all other sections, the frequency of each option represents the probability of having that option. So, pay attention to the fact that the sum of all frequencies of a section must be equal to 100.
+
 To use config mode type:
 
     adgen config --conn </path/to/conn_config.ini> --param </path/to/param_config.ini>
