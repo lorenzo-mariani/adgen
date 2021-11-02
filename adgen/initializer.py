@@ -1,6 +1,6 @@
 from adgen.config import DEFAULT_CONFIG
 from adgen.entities.entity import Entity
-from adgen.utils.utils import get_list_from_ini, get_value_from_ini
+from adgen.utils.loader import get_list_from_ini, get_value_from_ini
 
 
 def initialize(args):

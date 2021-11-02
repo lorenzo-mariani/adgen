@@ -2,7 +2,7 @@ import os
 
 from adgen.initializer import initialize
 from adgen.db import clear_and_generate
-from adgen.utils.utils import check_parameters
+from adgen.utils.loader import check_parameters
 
 
 def run(args):

@@ -14,7 +14,7 @@ from unittest import mock
 from adgen.cl_parser import parse_args
 from adgen.initializer import initialize
 from adgen.config import DEFAULT_CONFIG
-from adgen.utils.utils import get_value_from_ini
+from adgen.utils.loader import get_value_from_ini
 
 
 def test_commands():

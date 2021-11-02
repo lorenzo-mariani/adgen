@@ -3,7 +3,7 @@ import os
 from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setdomain, clear_and_generate, generate_data
 from adgen.initializer import initialize
 from adgen.utils.printer import print_commands
-from adgen.utils.utils import check_parameters
+from adgen.utils.loader import check_parameters
 
 
 def interactive(args):
