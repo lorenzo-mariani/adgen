@@ -1,9 +1,9 @@
 import sys
 
 from adgen.cl_parser import parse_args
-from adgen.commands.interactive import interactive
-from adgen.commands.run import run
-from adgen.commands.config import config
+from adgen.commands.interactive_mode import interactive
+from adgen.commands.run_mode import run
+from adgen.commands.config_mode import config
 
 
 def main():
