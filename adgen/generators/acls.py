@@ -313,7 +313,8 @@ def add_local_admin_rights(session, groups, computers):
                 MERGE (n:Group {name:prop.a})
                 WITH n,prop
                 MERGE (m:Computer {name:prop.b})
-                WITH n,m MERGE (n)-[:AdminTo]->(m)
+                WITH n,m
+                MERGE (n)-[:AdminTo]->(m)
                 """,
                 props=props
             )
