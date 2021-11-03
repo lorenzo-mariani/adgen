@@ -1,5 +1,7 @@
-from adgen.config import DEFAULT_CONFIG
-from adgen.entities.entity import Entity
+from adgen.default_config import DEFAULT_DB_SETTINGS, DEFAULT_DOMAIN_SETTINGS, DEFAULT_POOL
+from adgen.entities.db_settings import DbSettings
+from adgen.entities.domain_settings import DomainSettings
+from adgen.entities.pool import Pool
 from adgen.utils.loader import get_list_from_ini, get_value_from_ini
 
 
@@ -13,45 +15,49 @@ def initialize(args):
     Returns:
         The Entity with the provided configuration.
     """
-    ent = Entity()
-    ent.current_time = DEFAULT_CONFIG.get('current_time')
-    ent.sid = DEFAULT_CONFIG.get('sid')
-    ent.first_names = DEFAULT_CONFIG.get('first_names')
-    ent.last_names = DEFAULT_CONFIG.get('last_names')
+    db_settings = DbSettings()
+    domain_settings = DomainSettings()
+    pool = Pool()
+
+    domain_settings.current_time = DEFAULT_DOMAIN_SETTINGS.get('current_time')
+    domain_settings.sid = DEFAULT_DOMAIN_SETTINGS.get('sid')
+    pool.first_names = DEFAULT_POOL.get('first_names')
+    pool.last_names = DEFAULT_POOL.get('last_names')
 
     if args.get('command') == "config":
         try:
-            ent.url = get_value_from_ini("CONNECTION", "url", args.get('conn'))
-            ent.username = get_value_from_ini("CONNECTION", "username", args.get('conn'))
-            ent.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
-            ent.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
-            ent.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
-            ent.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
-            ent.servers_os = get_list_from_ini("SERVERS", args.get('param'))
-            ent.acls = get_list_from_ini("ACLS", args.get('param'))
-            ent.groups = get_list_from_ini("GROUPS", args.get('param'))
-            ent.ous = get_list_from_ini("OUS", args.get('param'))
+            db_settings.url = get_value_from_ini("CONNECTION", "url", args.get('conn'))
+            db_settings.username = get_value_from_ini("CONNECTION", "username", args.get('conn'))
+            db_settings.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
+            domain_settings.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
+            domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
+            pool.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
+            pool.servers_os = get_list_from_ini("SERVERS", args.get('param'))
+            pool.acls = get_list_from_ini("ACLS", args.get('param'))
+            pool.groups = get_list_from_ini("GROUPS", args.get('param'))
+            pool.ous = get_list_from_ini("OUS", args.get('param'))
+
         except Exception as err:
             print("Failed Retrieving Data: {error}".format(error=err))
     else:
-        ent.clients_os = DEFAULT_CONFIG.get('clients_os')
-        ent.servers_os = DEFAULT_CONFIG.get('servers_os')
-        ent.acls = DEFAULT_CONFIG.get('acls')
-        ent.groups = DEFAULT_CONFIG.get('groups')
-        ent.ous = DEFAULT_CONFIG.get('ous')
+        pool.clients_os = DEFAULT_POOL.get('clients_os')
+        pool.servers_os = DEFAULT_POOL.get('servers_os')
+        pool.acls = DEFAULT_POOL.get('acls')
+        pool.groups = DEFAULT_POOL.get('groups')
+        pool.ous = DEFAULT_POOL.get('ous')
 
         if args.get('command') == "run":
-            ent.url = args.get('url')
-            ent.username = args.get('user')
-            ent.password = args.get('passwd')
-            ent.nodes = args.get('nodes')
-            ent.domain = args.get('domain').upper()
+            db_settings.url = args.get('url')
+            db_settings.username = args.get('user')
+            db_settings.password = args.get('passwd')
+            domain_settings.nodes = args.get('nodes')
+            domain_settings.domain = args.get('domain').upper()
 
         elif args.get('command') == "interactive":
-            ent.url = DEFAULT_CONFIG.get('url')
-            ent.username = DEFAULT_CONFIG.get('username')
-            ent.password = DEFAULT_CONFIG.get('password')
-            ent.nodes = DEFAULT_CONFIG.get('nodes')
-            ent.domain = DEFAULT_CONFIG.get('domain')
+            db_settings.url = DEFAULT_DB_SETTINGS.get('url')
+            db_settings.username = DEFAULT_DB_SETTINGS.get('username')
+            db_settings.password = DEFAULT_DB_SETTINGS.get('password')
+            domain_settings.nodes = DEFAULT_DOMAIN_SETTINGS.get('nodes')
+            domain_settings.domain = DEFAULT_DOMAIN_SETTINGS.get('domain')
 
-    return ent
+    return db_settings, domain_settings, pool

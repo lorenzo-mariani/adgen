@@ -23,55 +23,54 @@ def init_entity():
     with mock.patch.object(sys, 'argv', interactive_args):
         args = parse_args(interactive_args)
         cmd_params = vars(args)
-        entity = initialize(cmd_params)
+        db_settings, domain_settings, pool = initialize(cmd_params)
 
-    return entity
+    return db_settings, domain_settings, pool
 
 
 def test_setnodes():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
     with mock.patch.object(builtins, 'input', lambda _: '300'):
-        db.setnodes(entity)
-        assert entity.nodes == 300
+        db.setnodes(domain_settings)
+        assert domain_settings.nodes == 300
 
 
 def test_setdomain():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
     with mock.patch.object(builtins, 'input', lambda _: 'CONTOSO.LOCAL'):
-        db.setdomain(entity)
-        assert entity.domain == 'contoso.local'.upper()
+        db.setdomain(domain_settings)
+        assert domain_settings.domain == 'contoso.local'.upper()
 
 
 def test_dbconfig():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
     with mock.patch.object(builtins, 'input', lambda _: 'different_url'):
-        db.dbconfig(entity)
-        assert entity.url == 'different_url'
+        db.dbconfig(db_settings)
+        assert db_settings.url == 'different_url'
 
     with mock.patch.object(builtins, 'input', lambda _: 'different_username'):
-        db.dbconfig(entity)
-        assert entity.username == 'different_username'
+        db.dbconfig(db_settings)
+        assert db_settings.username == 'different_username'
 
     with mock.patch.object(builtins, 'input', lambda _: 'different_password'):
-        db.dbconfig(entity)
-        assert entity.password == 'different_password'
+        db.dbconfig(db_settings)
+        assert db_settings.password == 'different_password'
 
 
 def test_connection():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    assert entity.connected is True
+    db.test_db_connection(db_settings)
+    assert db_settings.connected is True
 
 
 def test_cleardb():
-    entity = init_entity()
-
-    db.connect(entity)
-    session = entity.driver.session()
+    db_settings, domain_settings, pool = init_entity()
+    db.connect(db_settings)
+    session = db_settings.driver.session()
 
     session.run("match (a) -[r] -> () delete a, r")  # delete all nodes with relationships
     session.run("match (a) delete a")  # delete nodes that have no relationships
@@ -83,11 +82,11 @@ def test_cleardb():
 
 
 def test_computers():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     computers = []
     users = []
@@ -95,18 +94,25 @@ def test_computers():
     dcou = str(uuid.uuid4())
 
     # Create computers
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
-    assert len(computers) == entity.nodes
+    computers_props, computers, ridcount = db.create_computers(session, domain_settings.domain, domain_settings.sid,
+                                                               domain_settings.nodes, computers, pool.clients_os)
+    assert len(computers) == domain_settings.nodes
 
     # Create domain controllers
-    dcs_props, ridcount = db.create_dcs(session, entity.domain, entity.sid, dcou, ridcount, entity.servers_os, entity.ous)
+    dcs_props, ridcount = db.create_dcs(session, domain_settings.domain, domain_settings.sid, dcou, ridcount,
+                                        pool.servers_os, pool.ous)
     assert len(dcs_props) != 0
 
     # Add RDP / DCOM / Delegate To
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    groups_props, groups, ridcount = db.create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
-    das = db.add_domain_admins(session, entity.domain, entity.nodes, users)
-    it_users = db.add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time, pool.first_names,
+                                                  pool.last_names, users, ridcount)
+
+    groups_props, groups, ridcount = db.create_groups(session, domain_settings.domain, domain_settings.sid,
+                                                      domain_settings.nodes, groups, ridcount, pool.groups)
+
+    das = db.add_domain_admins(session, domain_settings.domain, domain_settings.nodes, users)
+    it_users = db.add_users_to_group(session, domain_settings.nodes, users, groups, das, pool.groups)
     it_groups = db.add_local_admin_rights(session, groups, computers)
     db.add_rdp_dcom_delegate(session, computers, it_users, it_groups)
 
@@ -133,7 +139,8 @@ def test_computers():
     assert len(result_has_session) == 0
 
     # Add sessions
-    db.add_sessions(session, entity.nodes, computers, users, das)
+    db.add_sessions(session, domain_settings.nodes, computers, users, das)
+
     result = []
     for r in session.run("MATCH p = () - [r:HasSession]->() RETURN p"):
         result.append(r)
@@ -141,6 +148,7 @@ def test_computers():
 
     # Add uncontrained delegation
     db.add_unconstrained_delegation(session, computers)
+
     result = []
     for r in session.run("MATCH (n) WHERE (n.unconstrainteddelegation) RETURN n"):
         result.append(r)
@@ -148,29 +156,34 @@ def test_computers():
 
 
 def test_users():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     users = []
     groups = []
     ridcount = 0
 
     # Create users
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time, pool.first_names,
+                                                  pool.last_names, users, ridcount)
+
     result = []
     for r in session.run("MATCH (n:User) RETURN n"):
         result.append(r)
-    assert len(users) == entity.nodes
+    assert len(users) == domain_settings.nodes
     assert len(result) == len(users)
 
     # Add kerberoastable users
-    groups_props, groups, ridcount = db.create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
-    das = db.add_domain_admins(session, entity.domain, entity.nodes, users)
-    it_users = db.add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
+    groups_props, groups, ridcount = db.create_groups(session, domain_settings.domain, domain_settings.sid,
+                                                      domain_settings.nodes, groups, ridcount, pool.groups)
+    das = db.add_domain_admins(session, domain_settings.domain, domain_settings.nodes, users)
+    it_users = db.add_users_to_group(session, domain_settings.nodes, users, groups, das, pool.groups)
     db.add_kerberoastable_users(session, it_users)
+
     result = []
     for r in session.run("MATCH (n) WHERE (n.hasspn) RETURN n"):
         result.append(r)
@@ -178,50 +191,56 @@ def test_users():
 
 
 def test_groups():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     groups = []
     users = []
     ridcount = 0
 
     # Data generation
-    db.data_generation(session, entity.domain, entity.sid)
+    db.data_generation(session, domain_settings.domain, domain_settings.sid)
+
     result = []
     for r in session.run("MATCH (n) RETURN n"):
         result.append(r)
     assert len(result) != 0
 
     # Create groups
-    groups_props, groups, ridcount = db.create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
-    assert len(groups) == entity.nodes
+    groups_props, groups, ridcount = db.create_groups(session, domain_settings.domain, domain_settings.sid,
+                                                      domain_settings.nodes, groups, ridcount, pool.groups)
+    assert len(groups) == domain_settings.nodes
 
     # Create nested groups
-    db.create_nested_groups(session, entity.nodes, groups)
+    db.create_nested_groups(session, domain_settings.nodes, groups)
+
     result = []
     for r in session.run("MATCH p=()-[r:MemberOf]->() RETURN p"):
         result.append(r)
     assert len(result) != 0
 
     # Add domain admins
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    das = db.add_domain_admins(session, entity.domain, entity.nodes, users)
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time,
+                                                  pool.first_names, pool.last_names, users, ridcount)
+
+    das = db.add_domain_admins(session, domain_settings.domain, domain_settings.nodes, users)
     assert len(das) != 0
 
     # Add users to group
-    it_users = db.add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
+    it_users = db.add_users_to_group(session, domain_settings.nodes, users, groups, das, pool.groups)
     assert len(it_users) != 0
 
 
 def test_ous():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     ou_guid_map = {}
     ou_props = []
@@ -231,21 +250,32 @@ def test_ous():
     dcou = str(uuid.uuid4())
 
     # Create dcs OUs
-    db.create_dcs_ous(session, entity.domain, dcou)
+    db.create_dcs_ous(session, domain_settings.domain, dcou)
+
     result = []
     for r in session.run("MATCH (n:OU) RETURN n"):
         result.append(r)
     assert len(result) != 0
 
     # Create computers OUs and create users OUs
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
-    ou_props, ou_guid_map = db.create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    ou_props, ou_guid_map = db.create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    assert len(ou_props) == 2 * entity.nodes
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time,
+                                                  pool.first_names, pool.last_names, users, ridcount)
+
+    computers_props, computers, ridcount = db.create_computers(session, domain_settings.domain, domain_settings.sid,
+                                                               domain_settings.nodes, computers, pool.clients_os)
+
+    ou_props, ou_guid_map = db.create_computers_ous(session, domain_settings.domain, computers, ou_guid_map, ou_props,
+                                                    domain_settings.nodes, pool.ous)
+
+    ou_props, ou_guid_map = db.create_users_ous(session, domain_settings.domain, users, ou_guid_map, ou_props,
+                                                domain_settings.nodes, pool.ous)
+
+    assert len(ou_props) == 2 * domain_settings.nodes
 
     # Link OUs to domain
-    db.link_ous_to_domain(session, entity.domain, ou_guid_map)
+    db.link_ous_to_domain(session, domain_settings.domain, ou_guid_map)
+
     result = []
     for r in session.run("MATCH (n:Domain) WITH n MATCH (m:OU) WITH m MATCH p=()-[r:Contains]->() RETURN m"):
         result.append(r)
@@ -253,11 +283,11 @@ def test_ous():
 
 
 def test_gpos():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     gpos = []
     ou_guid_map = {}
@@ -269,7 +299,8 @@ def test_gpos():
     ddcp = str(uuid.uuid4())
 
     # Create default GPOs
-    db.create_default_gpos(session, entity.domain, ddp, ddcp)
+    db.create_default_gpos(session, domain_settings.domain, ddp, ddcp)
+
     result = []
     for r in session.run("MATCH (n:GPO) RETURN n"):
         result.append(r)
@@ -278,7 +309,7 @@ def test_gpos():
     default_gpos = len(result)
 
     # Create GPOs
-    gpos = db.create_gpos(session, entity.domain, gpos)
+    gpos = db.create_gpos(session, domain_settings.domain, gpos)
     assert len(gpos) != 0
 
     result = []
@@ -287,11 +318,21 @@ def test_gpos():
     assert len(result) == len(gpos) + default_gpos
 
     # Link GPOs to OUs
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes, computers, entity.clients_os)
-    ou_props, ou_guid_map = db.create_computers_ous(session, entity.domain, computers, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    ou_props, ou_guid_map = db.create_users_ous(session, entity.domain, users, ou_guid_map, ou_props, entity.nodes, entity.ous)
-    db.link_to_ous(session, gpos, entity.domain, ou_guid_map)
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time,
+                                                  pool.first_names, pool.last_names, users, ridcount)
+
+    computers_props, computers, ridcount = db.create_computers(session, domain_settings.domain, domain_settings.sid,
+                                                               domain_settings.nodes, computers, pool.clients_os)
+
+    ou_props, ou_guid_map = db.create_computers_ous(session, domain_settings.domain, computers, ou_guid_map, ou_props,
+                                                    domain_settings.nodes, pool.ous)
+
+    ou_props, ou_guid_map = db.create_users_ous(session, domain_settings.domain, users, ou_guid_map, ou_props,
+                                                domain_settings.nodes, pool.ous)
+
+    db.link_to_ous(session, gpos, domain_settings.domain, ou_guid_map)
+
     result = []
     for r in session.run("MATCH (n:OU) WITH n MATCH (m:GPO) WITH n,m MATCH (m)-[:GpLink]->(n) return m"):
         result.append(r)
@@ -299,11 +340,11 @@ def test_gpos():
 
 
 def test_acls():
-    entity = init_entity()
+    db_settings, domain_settings, pool = init_entity()
 
-    db.test_db_connection(entity)
-    session = entity.driver.session()
-    db.cleardb(entity, "a")
+    db.test_db_connection(db_settings)
+    session = db_settings.driver.session()
+    db.cleardb(db_settings, "a")
 
     groups = []
     computers = []
@@ -315,7 +356,7 @@ def test_acls():
     ddcp = str(uuid.uuid4())
 
     # Add standard edges
-    db.add_standard_edges(session, entity.domain, dcou)
+    db.add_standard_edges(session, domain_settings.domain, dcou)
 
     result_generic_all = []
     result_owns = []
@@ -355,9 +396,14 @@ def test_acls():
     assert len(result_get_changes_all) != 0
 
     # Add domain admin
-    groups_props, groups, ridcount = db.create_groups(session, entity.domain, entity.sid, entity.nodes, groups, ridcount, entity.groups)
-    computers_props, computers, ridcount = db.create_computers(session, entity.domain, entity.sid, entity.nodes,computers, entity.clients_os)
-    db.add_domain_admin_to_local_admin(session, entity.sid)
+    groups_props, groups, ridcount = db.create_groups(session, domain_settings.domain, domain_settings.sid,
+                                                      domain_settings.nodes, groups, ridcount, pool.groups)
+
+    computers_props, computers, ridcount = db.create_computers(session, domain_settings.domain, domain_settings.sid,
+                                                               domain_settings.nodes, computers, pool.clients_os)
+
+    db.add_domain_admin_to_local_admin(session, domain_settings.sid)
+
     result = []
     for r in session.run("MATCH p=()-[r:AdminTo]->() RETURN p"):
         result.append(r)
@@ -368,12 +414,15 @@ def test_acls():
     assert len(it_groups) != 0
 
     # Add domain admin ACEs
-    user_props, users, ridcount = db.create_users(session, entity.domain, entity.sid, entity.nodes, entity.current_time, entity.first_names, entity.last_names, users, ridcount)
-    db.add_domain_admin_aces(session, entity.domain, computers, users, groups)
+    user_props, users, ridcount = db.create_users(session, domain_settings.domain, domain_settings.sid,
+                                                  domain_settings.nodes, domain_settings.current_time,
+                                                  pool.first_names, pool.last_names, users, ridcount)
+
+    db.add_domain_admin_aces(session, domain_settings.domain, computers, users, groups)
 
     # Add outbound ACLs
-    db.create_default_gpos(session, entity.domain, ddp, ddcp)
-    gpos = db.create_gpos(session, entity.domain, gpos)
-    das = db.add_domain_admins(session, entity.domain, entity.nodes, users)
-    it_users = db.add_users_to_group(session, entity.nodes, users, groups, das, entity.groups)
-    db.add_outbound_acls(session, it_groups, it_users, gpos, computers, entity.acls)
+    db.create_default_gpos(session, domain_settings.domain, ddp, ddcp)
+    gpos = db.create_gpos(session, domain_settings.domain, gpos)
+    das = db.add_domain_admins(session, domain_settings.domain, domain_settings.nodes, users)
+    it_users = db.add_users_to_group(session, domain_settings.nodes, users, groups, das, pool.groups)
+    db.add_outbound_acls(session, it_groups, it_users, gpos, computers, pool.acls)

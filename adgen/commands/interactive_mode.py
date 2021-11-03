@@ -15,8 +15,9 @@ def interactive(args):
     """
     path_to_check = os.path.join(os.path.abspath('adgen'), 'data', 'default_config.ini')
     check = check_parameters(path_to_check)
+
     if check == 0:
-        interactive_entity = initialize(args)
+        db_settings, domain_settings, pool = initialize(args)
 
         while True:
             print_commands()
@@ -27,26 +28,26 @@ def interactive(args):
                 if command == "help":
                     help()
                 elif command == "dbconfig":
-                    dbconfig(interactive_entity)
+                    dbconfig(db_settings)
                 elif command == "exit":
                     exit()
                 elif command == "connect":
-                    connect(interactive_entity)
+                    connect(db_settings)
                 elif command == "cleardb":
-                    cleardb(interactive_entity, "a")
+                    cleardb(db_settings, "a")
                 elif command == "setnodes":
-                    setnodes(interactive_entity)
+                    setnodes(domain_settings)
                 elif command == "setdomain":
-                    setdomain(interactive_entity)
+                    setdomain(domain_settings)
                 elif command == "clear_and_generate":
-                    clear_and_generate(interactive_entity)
+                    clear_and_generate(db_settings, domain_settings, pool)
                 elif command == "generate":
-                    generate_data(interactive_entity)
+                    generate_data(db_settings, domain_settings, pool)
                 else:
                     print(command + " does not exist!\n")
             except KeyboardInterrupt:
-                if interactive_entity.driver is not None:
-                    interactive_entity.driver.close()
+                if db_settings.driver is not None:
+                    db_settings.driver.close()
                 raise KeyboardInterrupt
     elif check == -1:
         raise Exception(f"Reading from File: {path_to_check} seems to return incorrect sections")

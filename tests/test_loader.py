@@ -10,10 +10,9 @@ import sys
 
 from unittest import mock
 from adgen.cl_parser import parse_args
+from adgen.default_config import DEFAULT_DB_SETTINGS, DEFAULT_DOMAIN_SETTINGS
 from adgen.initializer import initialize
-from adgen.config import DEFAULT_CONFIG
-from adgen.utils.loader import get_value_from_ini
-from adgen.utils.loader import check_parameters
+from adgen.utils.loader import check_parameters, get_value_from_ini
 
 
 def test_parameters():
@@ -58,13 +57,13 @@ def test_commands():
     with mock.patch.object(sys, 'argv', run_args):
         args = parse_args(run_args)
         cmd_params = vars(args)
-        entity = initialize(cmd_params)
+        db_settings, domain_settings, pool = initialize(cmd_params)
 
-    assert entity.url == "bolt://localhost:7687"
-    assert entity.username == "run_user"
-    assert entity.password == "run_passwd"
-    assert entity.nodes == 400
-    assert entity.domain == "run_domain.local".upper()
+    assert db_settings.url == "bolt://localhost:7687"
+    assert db_settings.username == "run_user"
+    assert db_settings.password == "run_passwd"
+    assert domain_settings.nodes == 400
+    assert domain_settings.domain == "run_domain.local".upper()
 
     # Config mode
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
@@ -79,13 +78,13 @@ def test_commands():
     with mock.patch.object(sys, 'argv', config_args):
         args = parse_args(config_args)
         cmd_params = vars(args)
-        entity = initialize(cmd_params)
+        db_settings, domain_settings, pool = initialize(cmd_params)
 
-    assert entity.url == get_value_from_ini("CONNECTION", "url", cmd_params.get('conn'))
-    assert entity.username == get_value_from_ini("CONNECTION", "username", cmd_params.get('conn'))
-    assert entity.password == get_value_from_ini("CONNECTION", "password", cmd_params.get('conn'))
-    assert entity.domain == get_value_from_ini("CONNECTION", "domain", cmd_params.get('conn'))
-    assert entity.nodes == get_value_from_ini("CONNECTION", "nodes", cmd_params.get('conn'))
+    assert db_settings.url == get_value_from_ini("CONNECTION", "url", cmd_params.get('conn'))
+    assert db_settings.username == get_value_from_ini("CONNECTION", "username", cmd_params.get('conn'))
+    assert db_settings.password == get_value_from_ini("CONNECTION", "password", cmd_params.get('conn'))
+    assert domain_settings.domain == get_value_from_ini("CONNECTION", "domain", cmd_params.get('conn'))
+    assert domain_settings.nodes == get_value_from_ini("CONNECTION", "nodes", cmd_params.get('conn'))
 
     # Interactive mode
     interactive_args = [
@@ -96,10 +95,10 @@ def test_commands():
     with mock.patch.object(sys, 'argv', interactive_args):
         args = parse_args(interactive_args)
         cmd_params = vars(args)
-        entity = initialize(cmd_params)
+        db_settings, domain_settings, pool = initialize(cmd_params)
 
-    assert entity.url == DEFAULT_CONFIG.get('url')
-    assert entity.username == DEFAULT_CONFIG.get('username')
-    assert entity.password == DEFAULT_CONFIG.get('password')
-    assert entity.nodes == DEFAULT_CONFIG.get('nodes')
-    assert entity.domain == DEFAULT_CONFIG.get('domain')
+    assert db_settings.url == DEFAULT_DB_SETTINGS.get('url')
+    assert db_settings.username == DEFAULT_DB_SETTINGS.get('username')
+    assert db_settings.password == DEFAULT_DB_SETTINGS.get('password')
+    assert domain_settings.nodes == DEFAULT_DOMAIN_SETTINGS.get('nodes')
+    assert domain_settings.domain == DEFAULT_DOMAIN_SETTINGS.get('domain')

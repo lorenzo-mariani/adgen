@@ -14,8 +14,8 @@ def config(args):
     check = check_parameters(path_to_check)
 
     if check == 0:
-        config_entity = initialize(args)
-        clear_and_generate(config_entity)
+        db_settings, domain_settings, pool = initialize(args)
+        clear_and_generate(db_settings, domain_settings, pool)
     elif check == -1:
         raise Exception(f"Reading from File: {path_to_check} seems to return incorrect sections")
     elif check == -2:
