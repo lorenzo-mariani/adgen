@@ -49,9 +49,7 @@ def parse_args(args):
                 subparsers.choices[parsed_args.cmd].print_help()
             except KeyError:
                 print(f'Unknown command name `{parsed_args.cmd}`')
-                print(
-                    f"Valid commands are: {', '.join(subparsers.choices.keys())}"
-                )
+                print(f"Valid commands are: {', '.join(subparsers.choices.keys())}")
         sys.exit(1)
 
     return parsed_args
