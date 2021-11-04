@@ -36,7 +36,8 @@ def dbconfig(db_settings):
     and password of an entity.
 
     Arguments:
-        entity -- the entity to which to configure the URL, username and password
+        db_settings -- the entity to which to configure the URL,
+                       username and password
     """
     print("Current settings:")
     print_db_settings(db_settings.url, db_settings.username, db_settings.password)
@@ -54,7 +55,7 @@ def setnodes(domain_settings):
     This function allows you to configure the nodes of an entity.
 
     Arguments:
-        entity -- the entity to which to configure the nodes
+        domain_settings -- the entity to which to configure the nodes
     """
     domain_settings.nodes = int(input_default("Number of nodes of each type to generate", domain_settings.nodes))
 
@@ -64,7 +65,7 @@ def setdomain(domain_settings):
     This function allows you to configure the domain of an entity.
 
     Arguments:
-        entity -- the entity to which to configure the domain
+        domain_settings -- the entity to which to configure the domain
     """
     domain_settings.domain = input_default("Domain", domain_settings.domain).upper()
     print("\nNew Settings:")
@@ -81,7 +82,7 @@ def connect(db_settings):
     Connects to the database.
 
     Arguments:
-        entity -- the entity used to connect to the database
+        db_settings -- the entity used to connect to the database
     """
     test_db_connection(db_settings)
     print("Database Connection Successful!")
@@ -92,8 +93,9 @@ def cleardb(db_settings, args):
     Clears the database.
 
     Arguments:
-        entity -- the entity containing information about the database connection
-        args   -- the information about the current session
+        db_settings -- the entity containing information about the
+                       database connection
+        args        -- the information about the current session
     """
     if not db_settings.connected:
         print("Not connected to database. Use connect first")
@@ -114,7 +116,7 @@ def test_db_connection(db_settings):
     Tests the database connection.
 
     Arguments:
-        entity -- the entity used to connect to the database
+        db_settings -- the entity used to connect to the database
     """
     db_settings.connected = False
     if db_settings.driver is not None:
@@ -132,8 +134,17 @@ def clear_and_generate(db_settings, domain_settings, pool):  # pragma: no cover
     Clears the database and generates random data.
 
     Arguments:
-        entity -- the entity containing information about the database
-                  connection and the parameters to be used for data generation
+        db_settings     -- the entity containing URL, username,
+                           password, driver, and connected, i.e.,
+                           parameters useful for the connection to
+                           the database
+        domain_settings -- the entity containing nodes, domain,
+                           current_time and sid of the domain to generate
+        pool            -- the entity containing a pool of values
+                           used to create nodes inside the domain,
+                           i.e., a list of first names and last names,
+                           a list of client OS and server OS, a list
+                           of acls, groups, and ous
     """
     connect(db_settings)
     cleardb(db_settings, "a")
@@ -145,8 +156,17 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     Generates random data.
 
     Arguments:
-        entity -- the entity containing information about the
-                  parameters to be used for data generation
+        db_settings     -- the entity containing URL, username,
+                           password, driver, and connected, i.e.,
+                           parameters useful for the connection to
+                           the database
+        domain_settings -- the entity containing nodes, domain,
+                           current_time and sid of the domain to generate
+        pool            -- the entity containing a pool of values
+                           used to create nodes inside the domain,
+                           i.e., a list of first names and last names,
+                           a list of client OS and server OS, a list
+                           of acls, groups, and ous
     """
     if not db_settings.connected:
         print("Not connected to the database")

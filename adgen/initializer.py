@@ -7,13 +7,23 @@ from adgen.utils.loader import get_list_from_ini, get_value_from_ini
 
 def initialize(args):
     """
-    Initialize an Entity with the provided configuration.
+    Initialize some entities with the provided configuration.
 
     Arguments:
         args -- the list of arguments passed from the command line
 
     Returns:
-        The Entity with the provided configuration.
+        db_settings     -- an entity containing URL, username,
+                           password, driver, and connected, i.e.,
+                           parameters useful for the connection to
+                           the database
+        domain_settings -- an entity containing nodes, domain,
+                           current_time and sid of the domain to generate
+        pool            -- an entity containing a pool of values
+                           used to create nodes inside the domain,
+                           i.e., a list of first names and last names,
+                           a list of client OS and server OS, a list
+                           of acls, groups, and ous
     """
     db_settings = DbSettings()
     domain_settings = DomainSettings()
