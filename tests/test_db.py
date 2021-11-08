@@ -7,6 +7,9 @@
 import sys
 import uuid
 import builtins
+
+import pytest
+
 import adgen.db as db
 
 from unittest import mock
@@ -36,6 +39,45 @@ def test_setnodes():
         assert domain_settings.nodes == 300
 
 
+def test_setnodes_distr():
+    db_settings, domain_settings, pool = init_entity()
+
+    # If the extremes of the distribution interval are equal,
+    # then the generated value must be equal to the extremes
+    user_input = ['uniform', '100', '100']
+    with mock.patch.object(builtins, 'input', side_effect=user_input):
+        db.setnodes_distr(domain_settings)
+        assert domain_settings.nodes == 100
+
+    # Entering a value of b lower than the value of a raises an exception
+    user_input = ['normal', '200', '100']
+    with pytest.raises(Exception) as exc_info:
+        with mock.patch.object(builtins, 'input', side_effect=user_input):
+            db.setnodes_distr(domain_settings)
+            assert exc_info.value == "ERROR: a must be lower than b."
+
+    # Triangular distribution
+    user_input = ['triangular', '500', '1000']
+    with mock.patch.object(builtins, 'input', side_effect=user_input):
+        db.setnodes_distr(domain_settings)
+        assert 500 <= domain_settings.nodes <= 1000
+
+    # A too small value is generated, so the number of nodes must be equal
+    # to the last set value (in this case between 500 and 1000 due to the
+    # triangular distribution above)
+    user_input = ['gauss', '50', '5']
+    with mock.patch.object(builtins, 'input', side_effect=user_input):
+        db.setnodes_distr(domain_settings)
+        assert 500 <= domain_settings.nodes <= 1000
+
+    # Entering a negative value of mu raises an exception
+    user_input = ['normal', '-100', '20']
+    with pytest.raises(Exception) as exc_info:
+        with mock.patch.object(builtins, 'input', side_effect=user_input):
+            db.setnodes_distr(domain_settings)
+            assert exc_info.value == "ERROR: mu and sigma must be positive."
+
+
 def test_setdomain():
     db_settings, domain_settings, pool = init_entity()
 
@@ -47,16 +89,12 @@ def test_setdomain():
 def test_dbconfig():
     db_settings, domain_settings, pool = init_entity()
 
-    with mock.patch.object(builtins, 'input', lambda _: 'different_url'):
+    user_input = ['different_url', 'different_username', 'different_password']
+
+    with mock.patch.object(builtins, 'input', side_effect=user_input):
         db.dbconfig(db_settings)
         assert db_settings.url == 'different_url'
-
-    with mock.patch.object(builtins, 'input', lambda _: 'different_username'):
-        db.dbconfig(db_settings)
         assert db_settings.username == 'different_username'
-
-    with mock.patch.object(builtins, 'input', lambda _: 'different_password'):
-        db.dbconfig(db_settings)
         assert db_settings.password == 'different_password'
 
 
