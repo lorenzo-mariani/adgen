@@ -52,6 +52,7 @@ At this point you can enter your parameters directly from the command line by us
     [help]                  Shows a brief description of the various commands (type help <topic>)
     [setdomain]             Set domain name (default 'TESTLAB.LOCAL')
     [setnodes]              Set base number of nodes to generate (default 500)
+    [setnodes_distr]        Set nodes distribution
 
 ### Run mode
 
