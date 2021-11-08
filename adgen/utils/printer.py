@@ -2,15 +2,15 @@ def print_commands():
     """Prints the commands available in interactive mode."""
     print(
         """
-===================================================
-                 CHOOSE A COMMAND:
+=========================================================
+                    CHOOSE A COMMAND:
 
-  1 - [clear_and_generate]          6 - [generate]
-  2 - [cleardb]                     7 - [help]
-  3 - [connect]                     8 - [setdomain]
-  4 - [dbconfig]                    9 - [setnodes]
-  5 - [exit]
-===================================================
+  1 - [clear_and_generate]          6  - [generate]
+  2 - [cleardb]                     7  - [help]
+  3 - [connect]                     8  - [setdomain]
+  4 - [dbconfig]                    9  - [setnodes]
+  5 - [exit]                        10 - [setnodes_distr]
+=========================================================
     """
     )
 
@@ -28,7 +28,8 @@ def print_help():
     print("[generate]" + "\t" * 3 + "Generate random data")
     print("[help]" + "\t" * 4 + "Shows a brief description of the various commands (type help <topic>)")
     print("[setdomain]" + "\t" * 3 + "Set domain name (default 'TESTLAB.LOCAL')")
-    print("[setnodes]" + "\t" * 3 + "Set base number of nodes to generate (default 500)\n")
+    print("[setnodes]" + "\t" * 3 + "Set base number of nodes to generate (default 600)")
+    print("[setnodes_distr]" + "\t" * 2 + "Set nodes distribution\n")
 
 
 def print_db_settings(url, username, password):

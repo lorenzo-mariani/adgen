@@ -1,6 +1,8 @@
 import os
+import time
 
-from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setdomain, clear_and_generate, generate_data
+from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setnodes_distr, setdomain, clear_and_generate,\
+     generate_data
 from adgen.initializer import initialize
 from adgen.utils.printer import print_commands
 from adgen.utils.loader import check_parameters
@@ -37,6 +39,8 @@ def interactive(args):
                     cleardb(db_settings, "a")
                 elif command == "setnodes":
                     setnodes(domain_settings)
+                elif command == "setnodes_distr":
+                    setnodes_distr(domain_settings)
                 elif command == "setdomain":
                     setdomain(domain_settings)
                 elif command == "clear_and_generate":
@@ -45,6 +49,7 @@ def interactive(args):
                     generate_data(db_settings, domain_settings, pool)
                 else:
                     print(command + " does not exist!\n")
+                time.sleep(0.3)
             except KeyboardInterrupt:
                 if db_settings.driver is not None:
                     db_settings.driver.close()
