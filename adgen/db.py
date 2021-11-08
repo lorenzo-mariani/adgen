@@ -89,6 +89,8 @@ def setnodes_distr(domain_settings):
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
         normal(domain_settings)
+    elif distr == "":
+        pass
     else:
         print("\nERROR: distribution does not exist (choose from uniform, triangular, gauss, and normal)")
         print("The number of nodes has been reset to the value {}.".format(domain_settings.nodes))
