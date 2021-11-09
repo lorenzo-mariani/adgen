@@ -2,6 +2,7 @@ from adgen.default_config import DEFAULT_DB_SETTINGS, DEFAULT_DOMAIN_SETTINGS, D
 from adgen.entities.db_settings import DbSettings
 from adgen.entities.domain_settings import DomainSettings
 from adgen.entities.pool import Pool
+from adgen.utils.distributions import run_distributions
 from adgen.utils.loader import get_list_from_ini, get_value_from_ini
 
 
@@ -60,8 +61,12 @@ def initialize(args):
             db_settings.url = args.get('url')
             db_settings.username = args.get('user')
             db_settings.password = args.get('passwd')
-            domain_settings.nodes = args.get('nodes')
             domain_settings.domain = args.get('domain').upper()
+
+            if args.get('nodes_distr') is not None:
+                run_distributions(args.get('nodes_distr'), domain_settings)
+            elif args.get('nodes_val') is not None:
+                domain_settings.nodes = args.get('nodes_val')
 
         elif args.get('command') == "interactive":
             db_settings.url = DEFAULT_DB_SETTINGS.get('url')
