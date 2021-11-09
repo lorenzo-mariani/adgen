@@ -15,6 +15,13 @@ def input_default(prompt, default):
 
 
 def check_uniform(a, b):
+    """
+    Checks whether the uniform distribution parameters are valid.
+
+    Arguments:
+        a -- first parameter of the distribution
+        b -- second parameter of the distribution
+    """
     if a < 0 or b < 0:
         raise Exception("ERROR: uniform(a,b): a and b must be positive.")
     elif a > b:
@@ -22,6 +29,13 @@ def check_uniform(a, b):
 
 
 def check_triangular(low, high):
+    """
+    Checks whether the triangular distribution parameters are valid.
+
+    Arguments:
+        low -- first parameter of the distribution
+        high -- second parameter of the distribution
+    """
     if low < 0 or high < 0:
         raise Exception("ERROR: triangular(low,high): low and high must be positive.")
     elif low > high:
@@ -29,11 +43,31 @@ def check_triangular(low, high):
 
 
 def check_gauss_normal(distr, mu, sigma):
+    """
+    Checks whether the gauss/normal distribution parameters are valid.
+
+    Arguments:
+        distr -- string that tell us if we are considering a gauss or a normal distribution
+        mu    -- first parameter of the distribution
+        sigma -- second parameter of the distribution
+    """
     if mu < 0 or sigma < 0:
         raise Exception(f"ERROR: {distr}(mu,sigma): mu and sigma must be positive.")
 
 
 def generate_random_value(domain_settings, distr, val_1, val_2):
+    """
+    Generates a random value of nodes based on the distribution.
+    A maximum of 3 attempts are made; if in 3 attempts you do not
+    get a value greater than 100 the value of the nodes to be
+    generated will be equal to the default value.
+
+    Arguments:
+        domain_settings -- the entity to which to configure the nodes
+        distr           -- distribution
+        val_1           -- first parameter of the distribution
+        val_2           -- second parameter of the distribution
+    """
     tmp = 0
     counter = 0
 
@@ -62,7 +96,7 @@ def generate_random_value(domain_settings, distr, val_1, val_2):
 def interactive_uniform(domain_settings):
     """
     This function creates a uniform distribution based on the
-    values entered by the user.
+    values entered by the user (interactive mode).
 
     Arguments:
         domain_settings -- the entity to which to configure the domain
@@ -89,7 +123,7 @@ def interactive_uniform(domain_settings):
 def interactive_triangular(domain_settings):
     """
     This function creates a triangular distribution based on the
-    values entered by the user.
+    values entered by the user (interactive mode).
 
     Arguments:
         domain_settings -- the entity to which to configure the domain
@@ -116,7 +150,7 @@ def interactive_triangular(domain_settings):
 def interactive_gauss(domain_settings):
     """
     This function creates a Gaussian distribution based on the
-    values entered by the user.
+    values entered by the user (interactive mode).
 
     Arguments:
         domain_settings -- the entity to which to configure the domain
@@ -143,7 +177,7 @@ def interactive_gauss(domain_settings):
 def interactive_normal(domain_settings):
     """
     This function creates a normal distribution based on the
-    values entered by the user.
+    values entered by the user (interactive mode).
 
     Arguments:
         domain_settings -- the entity to which to configure the domain
@@ -168,6 +202,14 @@ def interactive_normal(domain_settings):
 
 
 def run_distributions(args, domain_settings):
+    """
+    This function creates distributions based on the values
+    entered by the user (run mode).
+
+    Arguments:
+        args            -- the distribution entered by the user
+        domain_settings -- the entity to which to configure the domain
+    """
     txt = args.split("(")
 
     distr = txt[0].lower()

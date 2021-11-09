@@ -6,6 +6,14 @@ from adgen.utils.loader import check_parameters
 
 
 def check_args(args):
+    """
+    This function checks whether the user has entered --nodes-val or
+    --nodes-distr and, in the latter case, checks whether the inserted
+    distribution is valid.
+
+    Arguments:
+        args -- the list of arguments passed from the command line
+    """
     if args.get('nodes_val') is None and args.get('nodes_distr') is None:
         raise Exception("Missing nodes option. You can either use --nodes-val or -nodes-distr")
     elif args.get('nodes_val') is not None and args.get('nodes_distr') is not None:
