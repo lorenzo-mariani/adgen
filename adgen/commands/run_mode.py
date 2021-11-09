@@ -5,6 +5,26 @@ from adgen.db import clear_and_generate
 from adgen.utils.loader import check_parameters
 
 
+def check_args(args):
+    if args.get('nodes_val') is None and args.get('nodes_distr') is None:
+        raise Exception("Missing nodes option. You can either use --nodes-val or -nodes-distr")
+    elif args.get('nodes_val') is not None and args.get('nodes_distr') is not None:
+        raise Exception("You cannot use both --nodes-val and --nodes-distr at the same time. You only have to use one of them")
+
+    if args.get('nodes_distr') is not None:
+        available_distr = ['uniform', 'triangular', 'gauss', 'normal']
+
+        txt = args.get('nodes_distr').split("(")
+        distr = txt[0].lower()
+
+        if distr not in available_distr:
+            raise Exception(f"Distribution {distr} does not exist. Choose from:"
+                            f"\n\t- uniform(a,b)"
+                            f"\n\t- triangular(low,high)"
+                            f"\n\t- gauss(mu,sigma)"
+                            f"\n\t- normal(mu,sigma)")
+
+
 def run(args):
     """
     This function executes the run mode.
