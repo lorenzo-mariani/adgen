@@ -2,7 +2,7 @@ import sys
 
 from adgen.cl_parser import parse_args
 from adgen.commands.interactive_mode import interactive
-from adgen.commands.run_mode import run
+from adgen.commands.run_mode import run, check_args
 from adgen.commands.config_mode import config
 
 
@@ -16,6 +16,7 @@ def main():
         if cmd == "interactive":
             interactive(cmd_params)
         elif cmd == "run":
+            check_args(cmd_params)
             run(cmd_params)
         elif cmd == "config":
             config(cmd_params)
