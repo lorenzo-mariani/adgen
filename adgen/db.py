@@ -11,7 +11,7 @@ from adgen.generators.groups import data_generation, create_groups, add_domain_a
      add_users_to_group
 from adgen.generators.ous import create_dcs_ous, create_computers_ous, create_users_ous, link_ous_to_domain
 from adgen.generators.users import create_users, add_kerberoastable_users
-from adgen.utils.distributions import uniform, triangular, gauss, normal
+from adgen.utils.distributions import interactive_uniform, interactive_triangular, interactive_gauss, interactive_normal
 from adgen.utils.printer import print_help, print_db_settings
 
 
@@ -76,19 +76,19 @@ def setnodes_distr(domain_settings):
     if distr == "uniform":
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
-        uniform(domain_settings)
+        interactive_uniform(domain_settings)
     elif distr == "triangular":
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
-        triangular(domain_settings)
+        interactive_triangular(domain_settings)
     elif distr == "gauss":
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
-        gauss(domain_settings)
+        interactive_gauss(domain_settings)
     elif distr == "normal":
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
-        normal(domain_settings)
+        interactive_normal(domain_settings)
     elif distr == "":
         pass
     else:
