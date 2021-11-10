@@ -5,7 +5,7 @@ from adgen.db import clear_and_generate
 from adgen.utils.loader import check_parameters
 
 
-def check_args(args):
+def check_run_args(args):
     """
     This function checks whether the user has entered --nodes-val or
     --nodes-distr and, in the latter case, checks whether the inserted
