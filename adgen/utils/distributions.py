@@ -1,4 +1,5 @@
 import random
+import yaml
 
 from adgen.default_config import DEFAULT_DOMAIN_SETTINGS
 
@@ -24,6 +25,7 @@ def check_uniform(a, b):
     """
     if a < 0 or b < 0:
         raise Exception("ERROR: uniform(a,b): a and b must be positive.")
+
     elif a > b:
         raise Exception("ERROR: uniform(a,b): a must be lower than b.")
 
@@ -227,3 +229,31 @@ def run_distributions(args, domain_settings):
     elif distr == "gauss" or distr == "normal":
         check_gauss_normal(distr, val_1, val_2)
         generate_random_value(domain_settings, distr, val_1, val_2)
+
+
+def config_distributions(args, domain_settings):
+    """
+    This function creates distributions based on the values
+    entered by the user (config mode).
+
+    Arguments:
+        args            -- the distribution entered by the user
+        domain_settings -- the entity to which to configure the domain
+    """
+    path = args
+
+    with open(path) as fh:
+        data = yaml.load(fh, Loader=yaml.FullLoader)
+        distr = data[0].get('distribution').lower()
+        val_1 = data[0].get('x')
+        val_2 = data[0].get('y')
+
+        if distr == "uniform":
+            check_uniform(val_1, val_2)
+            generate_random_value(domain_settings, distr, val_1, val_2)
+        elif distr == "triangular":
+            check_triangular(val_1, val_2)
+            generate_random_value(domain_settings, distr, val_1, val_2)
+        elif distr == "gauss" or distr == "normal":
+            check_gauss_normal(distr, val_1, val_2)
+            generate_random_value(domain_settings, distr, val_1, val_2)
