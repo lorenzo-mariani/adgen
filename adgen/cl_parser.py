@@ -37,6 +37,7 @@ def parse_args(args):
                                                                         'and domain controllers, as well as '
                                                                         'information about acls, groups and ous ('
                                                                         'along with their frequencies)')
+    config_parser.add_argument('--nodes-distr', type=str, help='distribution of nodes to generate')
 
     # run parser
     run_parser.add_argument('--url', type=str, required=True, help='database URL to connect to')
