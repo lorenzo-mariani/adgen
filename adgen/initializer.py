@@ -2,7 +2,7 @@ from adgen.default_config import DEFAULT_DB_SETTINGS, DEFAULT_DOMAIN_SETTINGS, D
 from adgen.entities.db_settings import DbSettings
 from adgen.entities.domain_settings import DomainSettings
 from adgen.entities.pool import Pool
-from adgen.utils.distributions import run_distributions
+from adgen.utils.distributions import run_distributions, config_distributions
 from adgen.utils.loader import get_list_from_ini, get_value_from_ini
 
 
@@ -41,7 +41,12 @@ def initialize(args):
             db_settings.username = get_value_from_ini("CONNECTION", "username", args.get('conn'))
             db_settings.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
             domain_settings.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
-            domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
+
+            if args.get('nodes_distr') is not None:
+                config_distributions(args.get('nodes_distr'), domain_settings)
+            else:
+                domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
+
             pool.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
             pool.servers_os = get_list_from_ini("SERVERS", args.get('param'))
             pool.acls = get_list_from_ini("ACLS", args.get('param'))
