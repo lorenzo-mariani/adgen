@@ -51,26 +51,32 @@ At this point you can enter your parameters directly from the command line by us
     [generate]              Generate random data
     [help]                  Shows a brief description of the various commands (type help <topic>)
     [setdomain]             Set domain name (default 'TESTLAB.LOCAL')
-    [setnodes]              Set base number of nodes to generate (default 500)
+    [setnodes]              Set base number of nodes to generate (default 600)
     [setnodes_distr]        Set nodes distribution
 
 ### Run mode
 
 The run mode allows you to enter directly from the command line a series of parameters to be passed to adgen. The parameters to be entered are:
 
-    [url]                   Database URL to connect to
-    [username]              Database Username
-    [password]              Database Password
-    [nodes]                 Number of nodes to generate
-    [domain]                Name of the domain to generate
+    [url]                   Database URL to connect to (mandatory)
+    [username]              Database Username (mandatory)
+    [password]              Database Password (mandatory)
+    [nodes_val]             Number of nodes to generate (mandatory if you do not use nodes_distr)
+    [nodes_distr]           Distribution of the nodes to generate (mandatory if you do not use nodes_val)
+    [domain]                Name of the domain to generate (mandatory)
     
 To use the run mode type:
 
-    adgen run --url <url> --user <username> --passwd <password> --nodes <nodes> --domain <domain>
+    adgen run --url <url> --user <username> --passwd <password> --nodes-val <nodes_val> --domain <domain>
+
+or
+
+    adgen run --url <url> --user <username> --passwd <password> --nodes-distr <nodes_distr> --domain <domain>
+  
 
 ### Config mode
 
-The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _param_config.ini_.
+The config mode allows you to specify directly from the command line the **absolute path of two .ini files**, e.g., _conn_config.ini_ and _param_config.ini_ and the **absolute path of one .yaml file**, e.g., _config_nodes_distr.yaml_.
 
 _conn_config.ini_ contains the parameters necessary for the connection to the database, i.e., url, username, password, nodes, domain, e.g.:
 
@@ -110,9 +116,26 @@ _param_config.ini_ contains the list of client/server operating systems (along w
 
 **NOTE!** Except for OUs, for all other sections, the frequency of each option represents the probability of having that option. So, pay attention to the fact that the sum of all frequencies of a section must be equal to 100.
 
+_config_nodes_distr.yaml_ contains the information about the distributions of the nodes to generate, e.g.:
+
+    - distribution: "uniform"
+    x: 100
+    y: 300
+
+    - distribution: "gauss"
+    x: 200
+    y: 50
+
+    - ...
+
 To use config mode type:
 
     adgen config --conn </path/to/conn_config.ini> --param </path/to/param_config.ini>
+
+or
+
+    adgen config --conn </path/to/conn_config.ini> --param </path/to/param_config.ini> --nodes-distr </path/to/config_nodes_distr.yaml>
+
 
 ## COPYRIGHT
 
