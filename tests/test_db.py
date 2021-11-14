@@ -355,4 +355,14 @@ def test_generate_data():
     session.run("MATCH (n:Computer) SET n.owned=false")
     session.run("MATCH (n) SET n.domain=$domain", domain=domain_settings.domain)
 
+    result = []
+    for r in session.run("MATCH (n:User) WHERE n.owned=false RETURN n"):
+        result.append(r)
+    assert len(result) != 0
+
+    result = []
+    for r in session.run("MATCH (n:Computer) WHERE n.owned=false RETURN n"):
+        result.append(r)
+    assert len(result) != 0
+
     session.close()
