@@ -21,18 +21,16 @@ def interactive(args):
     if check == 0:
         db_settings, domain_settings, pool = initialize(args)
 
-        while True:
-            print_commands()
-            print("[cmd] ")
-            command = input()
+        print_commands()
+        print("[cmd] ")
+        command = input()
 
-            try:
+        try:
+            while command != "exit":
                 if command == "help":
                     help()
                 elif command == "dbconfig":
                     dbconfig(db_settings)
-                elif command == "exit":
-                    exit()
                 elif command == "connect":
                     connect(db_settings)
                 elif command == "cleardb":
@@ -50,10 +48,14 @@ def interactive(args):
                 else:
                     print(command + " does not exist!\n")
                 time.sleep(0.3)
-            except KeyboardInterrupt:
-                if db_settings.driver is not None:
-                    db_settings.driver.close()
-                raise KeyboardInterrupt
+                print_commands()
+                print("[cmd] ")
+                command = input()
+            exit()
+        except KeyboardInterrupt:
+            if db_settings.driver is not None:
+                db_settings.driver.close()
+            raise KeyboardInterrupt
     elif check == -1:
         raise Exception(f"Reading from File: {path_to_check} seems to return incorrect sections")
     elif check == -2:
