@@ -110,7 +110,8 @@ def setdomain(domain_settings):
 
 def exit():
     """Exits the program."""
-    sys.exit(1)
+   # sys.exit(1)
+    raise KeyboardInterrupt
 
 
 def connect(db_settings):
