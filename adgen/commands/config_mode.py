@@ -18,10 +18,10 @@ def check_config_args(args):
     if args.get('nodes_distr') is not None:
         path_to_check = args.get('nodes_distr')
 
+        # Check if the specified file exists
         if not os.path.exists(path_to_check):
             raise Exception(f"ERROR: Reading From File: file {path_to_check} does not exist")
 
-        # Check if the specified file exists
         with open(path_to_check) as fh:
             data = yaml.load(fh, Loader=yaml.FullLoader)
 
