@@ -19,6 +19,8 @@ from unittest import mock
 def test_config_init():
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
+
+    # Test while using a specific value for the node
     config_args = [
         "adgen",
         "config",
@@ -37,9 +39,29 @@ def test_config_init():
     assert domain_settings.domain == get_value_from_ini("CONNECTION", "domain", cmd_params.get('conn'))
     assert domain_settings.nodes == get_value_from_ini("CONNECTION", "nodes", cmd_params.get('conn'))
 
+    # Test while using a distribution for the nodes (in particular, uniform(200,300))
+    nodes_distr_path = os.path.join(os.path.abspath('adgen'), 'data', 'config_nodes_distr.yaml')
+    config_args = [
+        "adgen",
+        "config",
+        "--conn", conn_config_path,
+        "--param", param_config_path,
+        "--nodes-distr", nodes_distr_path
+    ]
+
+    with mock.patch.object(sys, 'argv', config_args):
+        args = parse_args(config_args)
+        cmd_params = vars(args)
+        db_settings, domain_settings, pool = initialize(cmd_params)
+
+    assert db_settings.url == get_value_from_ini("CONNECTION", "url", cmd_params.get('conn'))
+    assert db_settings.username == get_value_from_ini("CONNECTION", "username", cmd_params.get('conn'))
+    assert db_settings.password == get_value_from_ini("CONNECTION", "password", cmd_params.get('conn'))
+    assert domain_settings.domain == get_value_from_ini("CONNECTION", "domain", cmd_params.get('conn'))
+    assert 200 <= domain_settings.nodes <= 300
+
 
 def test_config_exceptions():
-
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
 
@@ -83,13 +105,12 @@ def test_config_exceptions():
 def test_config_mode():
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
-    nodes_distr_path = os.path.join(os.path.abspath('adgen'), 'data', 'config_nodes_distr.yaml')
+
     config_args = [
         "adgen",
         "config",
         "--conn", conn_config_path,
-        "--param", param_config_path,
-        "--nodes-distr", nodes_distr_path
+        "--param", param_config_path
     ]
 
     with mock.patch.object(sys, 'argv', config_args):
@@ -122,4 +143,4 @@ def test_config_mode():
         users = []
         for u in session.run("MATCH (n:User) RETURN n"):
             users.append(u)
-        assert 100 <= len(users) <= 300
+        assert len(users) != 0
