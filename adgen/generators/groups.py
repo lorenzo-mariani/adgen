@@ -246,10 +246,10 @@ def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
     print("Calculated {} groups per user with a variance of - {}".format(num_groups_base, variance * 2))
 
     for user in users:
-        group = random.choice(groups_list)
-        if group == "IT":
+        dept = random.choice(groups_list)
+        if dept == "IT":
             it_users.append(user)
-        possible_groups = [x for x in groups if group in x]
+        possible_groups = [x for x in groups if dept in x]
 
         sample = num_groups_base + random.randrange(-(variance * 2), 0)
         if sample > len(possible_groups):
@@ -262,7 +262,6 @@ def add_users_to_group(session, num_nodes, users, groups, das, groups_list):
 
         for group in to_add:
             props.append({'a': user, 'b': group})
-
         if len(props) > 500:
             session.run(
                 """
