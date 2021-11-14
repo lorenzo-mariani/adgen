@@ -6,23 +6,23 @@
 #
 # COMMENT: uniform(a,b), where x=a, y=b
 - distribution: "uniform"
-  x: 100
+  x: 200
   y: 300
 #
 #
 # COMMENT: triangular(low,high), where x=low, y=high
 #- distribution: "triangular"
-#  x: 100
+#  x: 200
 #  y: 300
 #
 #
 # COMMENT: gauss(mu,sigma), where x=mu, y=sigma
 #- distribution: "gauss"
-#  x: 100
-#  y: 300
+#  x: 200
+#  y: 50
 #
 #
 # COMMENT: normalvariate(mu,sigma), where x=mu, y=sigma
 #- distribution: "normal"
-#  x: 100
-#  y: 300
+#  x: 200
+#  y: 50
