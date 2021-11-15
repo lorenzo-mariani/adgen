@@ -15,6 +15,7 @@ from unittest import mock
 
 
 def test_run_init():
+    """Test if entities are initialized correctly while using run mode"""
     run_args = [
         "adgen",
         "run",
@@ -38,6 +39,7 @@ def test_run_init():
 
 
 def test_run_exceptions():
+    """Test exceptions while using run mode"""
     # Check if an exception is thrown when neither --nodes-val nor --nodes-distr is inserted
     run_args = [
         "adgen",
@@ -99,6 +101,7 @@ def test_run_exceptions():
 
 
 def test_run_mode():
+    """Test the correct behavior of the run mode"""
     domain_name = "run_domain.local"
 
     run_args = [

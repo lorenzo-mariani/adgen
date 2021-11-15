@@ -19,6 +19,7 @@ from unittest import mock
 
 
 def test_interactive_init():
+    """Test if entities are initialized correctly while using interactive mode"""
     interactive_args = [
         "adgen",
         "interactive"
@@ -37,6 +38,7 @@ def test_interactive_init():
 
 
 def test_interactive_mode():
+    """Test the correct behavior of the interactive mode"""
     interactive_args = [
         "adgen",
         "interactive"

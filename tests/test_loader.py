@@ -9,6 +9,7 @@ from adgen.utils.loader import check_parameters
 
 
 def test_parameters():
+    """Test if the data is loaded correctly"""
     # Everything is correct inside correct_config.ini
     path_to_check = os.path.join(os.path.abspath('tests'), 'data', 'correct_config.ini')
     check = check_parameters(path_to_check)

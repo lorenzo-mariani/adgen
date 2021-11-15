@@ -17,6 +17,7 @@ from unittest import mock
 
 
 def test_config_init():
+    """Test if entities are initialized correctly while using config mode"""
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
 
@@ -62,6 +63,7 @@ def test_config_init():
 
 
 def test_config_exceptions():
+    """Test exceptions while using config mode"""
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
 
@@ -103,6 +105,7 @@ def test_config_exceptions():
 
 
 def test_config_mode():
+    """Test the correct behavior of the config mode"""
     conn_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'conn_config.ini')
     param_config_path = os.path.join(os.path.abspath('adgen'), 'data', 'param_config.ini')
 

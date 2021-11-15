@@ -16,6 +16,22 @@ from unittest import mock
 
 
 def init_entity():
+    """
+    Initialize some entities with the provided configuration.
+
+    Returns:
+        db_settings     -- an entity containing URL, username,
+                           password, driver, and connected, i.e.,
+                           parameters useful for the connection to
+                           the database
+        domain_settings -- an entity containing nodes, domain,
+                           current_time and sid of the domain to generate
+        pool            -- an entity containing a pool of values
+                           used to create nodes inside the domain,
+                           i.e., a list of first names and last names,
+                           a list of client OS and server OS, a list
+                           of acls, groups, and ous
+    """
     interactive_args = [
         "adgen",
         "interactive"
@@ -30,6 +46,7 @@ def init_entity():
 
 
 def test_setnodes():
+    """Test a speicific value to generate the nodes"""
     db_settings, domain_settings, pool = init_entity()
 
     with mock.patch.object(builtins, 'input', lambda _: '300'):
@@ -38,6 +55,7 @@ def test_setnodes():
 
 
 def test_setnodes_distr():
+    """Test the distributions to generate the nodes"""
     db_settings, domain_settings, pool = init_entity()
 
     # If the extremes of the distribution interval are equal,
@@ -77,6 +95,7 @@ def test_setnodes_distr():
 
 
 def test_setdomain():
+    """Test the domain"""
     db_settings, domain_settings, pool = init_entity()
 
     with mock.patch.object(builtins, 'input', lambda _: 'CONTOSO.LOCAL'):
@@ -85,6 +104,7 @@ def test_setdomain():
 
 
 def test_dbconfig():
+    """Test database configuration"""
     db_settings, domain_settings, pool = init_entity()
 
     user_input = ['different_url', 'different_username', 'different_password']
@@ -97,6 +117,7 @@ def test_dbconfig():
 
 
 def test_connection():
+    """Test the connection to the database"""
     db_settings, domain_settings, pool = init_entity()
 
     db.test_db_connection(db_settings)
@@ -104,6 +125,7 @@ def test_connection():
 
 
 def test_cleardb():
+    """Test if the database is cleared"""
     db_settings, domain_settings, pool = init_entity()
     db.connect(db_settings)
     session = db_settings.driver.session()
@@ -118,6 +140,7 @@ def test_cleardb():
 
 
 def assert_standard_edges(session):
+    """Test generation of standard edges"""
     result_generic_all = []
     result_owns = []
     result_write_owner = []
@@ -157,6 +180,7 @@ def assert_standard_edges(session):
 
 
 def assert_rdp_dcom_delegate(session):
+    """Test generation of 'RDP', 'DCOM' and 'Delegate to'"""
     result_can_rdp = []
     result_execute_dcom = []
     result_allowed_to_delegate = []
@@ -181,6 +205,7 @@ def assert_rdp_dcom_delegate(session):
 
 
 def test_generate_data():
+    """Test if the data generated correctly"""
     db_settings, domain_settings, pool = init_entity()
 
     db.test_db_connection(db_settings)
