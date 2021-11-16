@@ -45,7 +45,10 @@ def initialize(args):
             if args.get('nodes_distr') is not None:
                 config_distributions(args.get('nodes_distr'), domain_settings)
             else:
-                domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
+                if get_value_from_ini("CONNECTION", "nodes", args.get('conn')) <= 0:
+                    raise Exception("ERROR: the number of nodes must be positive.")
+                else:
+                    domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
 
             pool.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
             pool.servers_os = get_list_from_ini("SERVERS", args.get('param'))
@@ -71,7 +74,10 @@ def initialize(args):
             if args.get('nodes_distr') is not None:
                 run_distributions(args.get('nodes_distr'), domain_settings)
             elif args.get('nodes_val') is not None:
-                domain_settings.nodes = args.get('nodes_val')
+                if args.get('nodes_val') <= 0:
+                    raise Exception("ERROR: the number of nodes must be positive.")
+                else:
+                    domain_settings.nodes = args.get('nodes_val')
 
         elif args.get('command') == "interactive":
             db_settings.url = DEFAULT_DB_SETTINGS.get('url')
