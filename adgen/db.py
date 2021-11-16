@@ -1,4 +1,3 @@
-import sys
 import uuid
 
 from neo4j import GraphDatabase
@@ -58,7 +57,12 @@ def setnodes(domain_settings):
     Arguments:
         domain_settings -- the entity to which to configure the nodes
     """
-    domain_settings.nodes = int(input_default("Number of nodes of each type to generate", domain_settings.nodes))
+    tmp = int(input_default("Number of nodes of each type to generate", domain_settings.nodes))
+
+    if tmp <= 0:
+        raise Exception("ERROR: the number of nodes must be positive.")
+    else:
+        domain_settings.nodes = tmp
 
 
 def setnodes_distr(domain_settings):
