@@ -36,28 +36,26 @@ def initialize(args):
     pool.last_names = DEFAULT_POOL.get('last_names')
 
     if args.get('command') == "config":
-        try:
-            db_settings.url = get_value_from_ini("CONNECTION", "url", args.get('conn'))
-            db_settings.username = get_value_from_ini("CONNECTION", "username", args.get('conn'))
-            db_settings.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
-            domain_settings.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
 
-            if args.get('nodes_distr') is not None:
-                config_distributions(args.get('nodes_distr'), domain_settings)
+        db_settings.url = get_value_from_ini("CONNECTION", "url", args.get('conn'))
+        db_settings.username = get_value_from_ini("CONNECTION", "username", args.get('conn'))
+        db_settings.password = get_value_from_ini("CONNECTION", "password", args.get('conn'))
+        domain_settings.domain = get_value_from_ini("CONNECTION", "domain", args.get('conn'))
+
+        if args.get('nodes_distr') is not None:
+            config_distributions(args.get('nodes_distr'), domain_settings)
+        else:
+            if get_value_from_ini("CONNECTION", "nodes", args.get('conn')) <= 0:
+                raise Exception("ERROR: the number of nodes must be positive.")
             else:
-                if get_value_from_ini("CONNECTION", "nodes", args.get('conn')) <= 0:
-                    raise Exception("ERROR: the number of nodes must be positive.")
-                else:
-                    domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
+                domain_settings.nodes = get_value_from_ini("CONNECTION", "nodes", args.get('conn'))
 
-            pool.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
-            pool.servers_os = get_list_from_ini("SERVERS", args.get('param'))
-            pool.acls = get_list_from_ini("ACLS", args.get('param'))
-            pool.groups = get_list_from_ini("GROUPS", args.get('param'))
-            pool.ous = get_list_from_ini("OUS", args.get('param'))
+        pool.clients_os = get_list_from_ini("CLIENTS", args.get('param'))
+        pool.servers_os = get_list_from_ini("SERVERS", args.get('param'))
+        pool.acls = get_list_from_ini("ACLS", args.get('param'))
+        pool.groups = get_list_from_ini("GROUPS", args.get('param'))
+        pool.ous = get_list_from_ini("OUS", args.get('param'))
 
-        except Exception as err:
-            print("Failed Retrieving Data: {error}".format(error=err))
     else:
         pool.clients_os = DEFAULT_POOL.get('clients_os')
         pool.servers_os = DEFAULT_POOL.get('servers_os')
