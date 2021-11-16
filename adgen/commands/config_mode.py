@@ -15,6 +15,12 @@ def check_config_args(args):
     Arguments:
         args -- the list of arguments passed from the command line
     """
+    if not os.path.exists(args.get('conn')):
+        raise Exception(f"ERROR: Reading From File: file {args.get('conn')} does not exist")
+
+    if not os.path.exists(args.get('param')):
+        raise Exception(f"ERROR: Reading From File: file {args.get('param')} does not exist")
+
     if args.get('nodes_distr') is not None:
         path_to_check = args.get('nodes_distr')
 
