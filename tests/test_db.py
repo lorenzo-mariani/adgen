@@ -53,6 +53,11 @@ def test_setnodes():
         db.setnodes(domain_settings)
         assert domain_settings.nodes == 300
 
+    with pytest.raises(Exception) as exc_info:
+        with mock.patch.object(builtins, 'input', lambda _: '-300'):
+            db.setnodes(domain_settings)
+            assert exc_info.value == "ERROR: the number of nodes must be positive."
+
 
 def test_setnodes_distr():
     """Test the distributions to generate the nodes"""
@@ -65,7 +70,12 @@ def test_setnodes_distr():
         db.setnodes_distr(domain_settings)
         assert domain_settings.nodes == 100
 
-    # Entering a value of b lower than the value of a raises an exception
+    user_input = ['invalid_distr', '100', '20']
+    with mock.patch.object(builtins, 'input', side_effect=user_input):
+        db.setnodes_distr(domain_settings)
+        assert domain_settings.nodes == 100
+
+    # Entering a value of 'b' lower than the value of 'a' raises an exception
     user_input = ['normal', '200', '100']
     with pytest.raises(Exception) as exc_info:
         with mock.patch.object(builtins, 'input', side_effect=user_input):
@@ -74,14 +84,6 @@ def test_setnodes_distr():
 
     # Triangular distribution
     user_input = ['triangular', '500', '1000']
-    with mock.patch.object(builtins, 'input', side_effect=user_input):
-        db.setnodes_distr(domain_settings)
-        assert 500 <= domain_settings.nodes <= 1000
-
-    # A too small value is generated, so the number of nodes must be equal
-    # to the last set value (in this case between 500 and 1000 due to the
-    # triangular distribution above)
-    user_input = ['gauss', '50', '5']
     with mock.patch.object(builtins, 'input', side_effect=user_input):
         db.setnodes_distr(domain_settings)
         assert 500 <= domain_settings.nodes <= 1000
