@@ -50,30 +50,50 @@ def create_computers_ous(session, domain_name, computers, ou_guid_map, ou_props,
 
     for i in range(0, num_ous):
         ou = ous_list[i]
-        ou_comps = split_comps[i]
-        ouname = "{}_COMPUTERS@{}".format(ou, domain_name)
-        guid = str(uuid.uuid4())
-        ou_guid_map[ouname] = guid
-        for c in ou_comps:
+
+        try:
+            ou_comps = split_comps[i]
+            ouname = "{}_COMPUTERS@{}".format(ou, domain_name)
+            guid = str(uuid.uuid4())
+            ou_guid_map[ouname] = guid
+            for c in ou_comps:
+                ou_properties = {
+                    'compname': c,
+                    'ouguid': guid,
+                    'ouname': ouname
+                }
+                props.append(ou_properties)
+                ou_props.append(ou_properties)
+                if len(props) > 500:
+                    session.run(
+                        """
+                        UNWIND $props as prop
+                        MERGE (n:Computer {name:prop.compname})
+                        WITH n,prop MERGE (m:Base {objectid:prop.ouguid, name:prop.ouname, blocksInheritance: false})
+                        SET m:OU WITH n,m,prop
+                        MERGE (m)-[:Contains]->(n)
+                        """,
+                        props=props
+                    )
+                    props = []
+        except IndexError:
+            ouname = "{}_COMPUTERS@{}".format(ou, domain_name)
+            guid = str(uuid.uuid4())
+            ou_guid_map[ouname] = guid
             ou_properties = {
-                'compname': c,
                 'ouguid': guid,
                 'ouname': ouname
             }
-            props.append(ou_properties)
             ou_props.append(ou_properties)
-            if len(props) > 500:
-                session.run(
-                    """
-                    UNWIND $props as prop
-                    MERGE (n:Computer {name:prop.compname})
-                    WITH n,prop MERGE (m:Base {objectid:prop.ouguid, name:prop.ouname, blocksInheritance: false})
-                    SET m:OU WITH n,m,prop
-                    MERGE (m)-[:Contains]->(n)
-                    """,
-                    props=props
+            session.run(
+                """
+                CREATE (n:Base {objectid:$sid})
+                SET n:OU,n.name=$name, n.blocksInheritance=false, n.highvalue=false
+                """,
+                sid=ou_properties["ouguid"],
+                name=ou_properties["ouname"]
                 )
-                props = []
+
     session.run(
         """
         UNWIND $props as prop
@@ -114,32 +134,51 @@ def create_users_ous(session, domain_name, users, ou_guid_map, ou_props, num_nod
 
     for i in range(0, num_ous):
         ou = ous_list[i]
-        ou_users = split_users[i]
-        ouname = "{}_USERS@{}".format(ou, domain_name)
-        guid = str(uuid.uuid4())
-        ou_guid_map[ouname] = guid
-        for c in ou_users:
+
+        try:
+            ou_users = split_users[i]
+            ouname = "{}_USERS@{}".format(ou, domain_name)
+            guid = str(uuid.uuid4())
+            ou_guid_map[ouname] = guid
+            for c in ou_users:
+                ou_properties = {
+                    'username': c,
+                    'ouguid': guid,
+                    'ouname': ouname
+                }
+                props.append(ou_properties)
+                ou_props.append(ou_properties)
+                if len(props) > 500:
+                    session.run(
+                        """
+                        UNWIND $props as prop
+                        MERGE (n:User {name:prop.username})
+                        WITH n,prop
+                        MERGE (m:Base {objectid:prop.ouguid, name:prop.ouname, blocksInheritance: false})
+                        SET m:OU
+                        WITH n,m,prop
+                        MERGE (m)-[:Contains]->(n)
+                        """,
+                        props=props
+                    )
+                    props = []
+        except IndexError:
+            ouname = "{}_USERS@{}".format(ou, domain_name)
+            guid = str(uuid.uuid4())
+            ou_guid_map[ouname] = guid
             ou_properties = {
-                'username': c,
                 'ouguid': guid,
                 'ouname': ouname
             }
-            props.append(ou_properties)
             ou_props.append(ou_properties)
-            if len(props) > 500:
-                session.run(
-                    """
-                    UNWIND $props as prop
-                    MERGE (n:User {name:prop.username})
-                    WITH n,prop
-                    MERGE (m:Base {objectid:prop.ouguid, name:prop.ouname, blocksInheritance: false})
-                    SET m:OU
-                    WITH n,m,prop
-                    MERGE (m)-[:Contains]->(n)
-                    """,
-                    props=props
+            session.run(
+                """
+                CREATE (n:Base {objectid:$sid})
+                SET n:OU,n.name=$name, n.blocksInheritance=false, n.highvalue=false
+                """,
+                sid=ou_properties["ouguid"],
+                name=ou_properties["ouname"]
                 )
-                props = []
 
     session.run(
         """
