@@ -88,10 +88,10 @@ The run mode allows you to enter directly from the command line a series of para
     
     [nodes_distr]           Distribution of the nodes to generate (mandatory if you do not use [nodes_val]).
                             There are four available distributions, i.e.:
-                              - uniform(a, b)
-                              - triangular(low, high)
-                              - gauss(mu, sigma)
-                              - normal(mu, sigma)
+                              - uniform(a,b)
+                              - triangular(low,high)
+                              - gauss(mu,sigma)
+                              - normal(mu,sigma)
     
     [domain]                Name of the domain to generate (mandatory)
     
