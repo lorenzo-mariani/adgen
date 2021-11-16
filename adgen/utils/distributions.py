@@ -88,11 +88,11 @@ def generate_random_value(domain_settings, distr, val_1, val_2):
         else:
             break
 
-    if tmp >= 100:
-        domain_settings.nodes = int(tmp)
-    else:
+    if tmp <= 0:
         domain_settings.nodes = DEFAULT_DOMAIN_SETTINGS.get('nodes')
-        print("Unfortunately, the value generated is too small. The number of nodes has been reset to the value {}.".format(domain_settings.nodes))
+        print("Unfortunately, the value generated is lower or equal to zero. The number of nodes has been reset to the value {}.".format(domain_settings.nodes))
+    else:
+        domain_settings.nodes = int(tmp)
 
 
 def interactive_uniform(domain_settings):
