@@ -24,7 +24,7 @@ _adgen_ is a generator of Active Directory data that is stored into a Neo4j grap
 
 **You should have Python 3.x installed.**
 
-To install adgen follow the steps below:
+To install _adgen_ follow the steps below:
 
     git clone https://github.com/lorenzo-mariani/adgen
     cd adgen
