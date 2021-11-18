@@ -1,4 +1,4 @@
-# adgen. An Active Directory generator
+# _adgen_. An Active Directory generator
 
 Author: Lorenzo Mariani
 
@@ -18,7 +18,7 @@ Version: 0.1.0
 
 ## Purpose
 
-adgen is a generator of Active Directory data that is stored into a Neo4j graph database. adgen was born from the ashes of [DBCreator](https://github.com/BloodHoundAD/BloodHound-Tools) with the aim of improving the program and adding new features.
+_adgen_ is a generator of Active Directory data that is stored into a Neo4j graph database. adgen was born from the ashes of [DBCreator](https://github.com/BloodHoundAD/BloodHound-Tools) with the aim of improving the program and adding new features.
 
 ## Installation
 
@@ -33,11 +33,11 @@ To install adgen follow the steps below:
 
 ## Usage
 
-Once installed, adgen can be used in three different modes, i.e., interactive mode, run mode and config mode.
+Once installed, _adgen_ can be used in three different modes, i.e., interactive mode, run mode and config mode.
 
 ### Interactive mode
 
-To use adgen in interactive mode, type:
+To use _adgen_ in interactive mode, type:
 
     adgen interactive
 
