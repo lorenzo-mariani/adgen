@@ -18,7 +18,7 @@ Version: 0.1.0
 
 ## Purpose
 
-_adgen_ is a generator of Active Directory data that is stored into a Neo4j graph database. adgen was born from the ashes of [DBCreator](https://github.com/BloodHoundAD/BloodHound-Tools) with the aim of improving the program and adding new features.
+_adgen_ is a generator of Active Directory data that is stored into a Neo4j graph database. _adgen_ was born from the ashes of [DBCreator](https://github.com/BloodHoundAD/BloodHound-Tools) with the aim of improving the program and adding new features.
 
 ## Installation
 
@@ -76,7 +76,7 @@ At this point you can enter your parameters directly from the command line by us
 
 ### Run mode
 
-The run mode allows you to enter directly from the command line a series of parameters to be passed to adgen. The parameters to be entered are:
+The run mode allows you to enter directly from the command line a series of parameters to be passed to _adgen_. The parameters to be entered are:
 
     [url]                   Database URL to connect to (mandatory)
 
@@ -118,7 +118,7 @@ _conn_config.ini_ contains the parameters necessary for the connection to the da
     domain = contoso.local
     nodes = 500   
 
-_param_config.ini_ contains the list of client/server operating systems (along with their frequencies) that adgen will use when generating client computers and domain controllers, as well as information about acls, groups and ous (along with their frequencies), e.g.:
+_param_config.ini_ contains the list of client/server operating systems (along with their frequencies) that _adgen_ will use when generating client computers and domain controllers, as well as information about acls, groups and ous (along with their frequencies), e.g.:
 
     [CLIENTS]
     Windows 10 Pro = 30
