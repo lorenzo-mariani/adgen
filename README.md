@@ -67,10 +67,10 @@ At this point you can enter your parameters directly from the command line by us
     [setnodes_distr]        Set base distribution of nodes to generate. If not used, the number of
                             nodes to be generated is equal to the last value entered by [setnodes].
                             There are four available distributions, i.e.:
-                              - uniform(a, b)
-                              - triangular(low, high)
-                              - gauss(mu, sigma)
-                              - normal(mu, sigma)
+                              - uniform(a,b)
+                              - triangular(low,high)
+                              - gauss(mu,sigma)
+                              - normal(mu,sigma)
 
 **_Note!_** In order for data generation to occur correctly, either using the [setnodes] command or using [setnodes_distr], the entered value must be greater than zero. Therefore, if the entered value is less or equal to zero, the latter is automatically restored to the default value (600) or to the last value entered using the [setnodes] command.
 
