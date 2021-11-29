@@ -30,6 +30,7 @@ def initialize(args):
     domain_settings = DomainSettings()
     pool = Pool()
 
+    db_settings.connected = False
     domain_settings.current_time = DEFAULT_DOMAIN_SETTINGS.get('current_time')
     domain_settings.sid = DEFAULT_DOMAIN_SETTINGS.get('sid')
     pool.first_names = DEFAULT_POOL.get('first_names')

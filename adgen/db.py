@@ -10,7 +10,7 @@ from adgen.generators.groups import data_generation, create_groups, add_domain_a
      add_users_to_group
 from adgen.generators.ous import create_dcs_ous, create_computers_ous, create_users_ous, link_ous_to_domain
 from adgen.generators.users import create_users, add_kerberoastable_users
-from adgen.utils.distributions import interactive_uniform, interactive_triangular, interactive_gauss, interactive_normal
+from adgen.utils.distributions import interactive_uniform, interactive_triangular, interactive_gauss, interactive_gamma
 from adgen.utils.printer import print_help, print_db_settings
 
 
@@ -73,7 +73,7 @@ def setnodes_distr(domain_settings):
     Arguments:
         domain_settings -- the entity to which to configure the nodes
     """
-    print("Set nodes distribution (if nothing is specified the default value " + str(domain_settings.nodes) + " is taken)\n\t- uniform\n\t- triangular\n\t- gauss\n\t- normal\n")
+    print("Set nodes distribution (if nothing is specified the default value " + str(domain_settings.nodes) + " is taken)\n\t- uniform\n\t- triangular\n\t- gauss\n\t- gamma\n")
 
     distr = input("Enter distribution: ").lower()
 
@@ -89,10 +89,10 @@ def setnodes_distr(domain_settings):
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
         interactive_gauss(domain_settings)
-    elif distr == "normal":
+    elif distr == "gamma":
         print("\nNew Settings:")
         print("Distribution: {}\n".format(distr))
-        interactive_normal(domain_settings)
+        interactive_gamma(domain_settings)
     elif distr == "":
         pass
     else:
@@ -236,21 +236,16 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     add_standard_edges(session, domain_settings.domain, dcou)
 
     print("Generating Computer Nodes")
-    computers_props, computers, ridcount = create_computers(session, domain_settings.domain, domain_settings.sid,
-                                                            domain_settings.nodes, computers, pool.clients_os)
+    computers_props, computers, ridcount = create_computers(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, computers, pool.clients_os)
 
     print("Creating Domain Controllers")
-    dcs_props, ridcount = create_dcs(session, domain_settings.domain, domain_settings.sid, dcou, ridcount,
-                                     pool.servers_os, pool.ous)
+    dcs_props, ridcount = create_dcs(session, domain_settings.domain, domain_settings.sid, dcou, ridcount, pool.servers_os, pool.ous)
 
     print("Generating User Nodes")
-    user_props, users, ridcount = create_users(session, domain_settings.domain, domain_settings.sid,
-                                               domain_settings.nodes, domain_settings.current_time, pool.first_names,
-                                               pool.last_names, users, ridcount)
+    user_props, users, ridcount = create_users(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, domain_settings.current_time, pool.first_names, pool.last_names, users, ridcount)
 
     print("Generating Group Nodes")
-    groups_props, groups, ridcount = create_groups(session, domain_settings.domain, domain_settings.sid,
-                                                   domain_settings.nodes, groups, ridcount, pool.groups)
+    groups_props, groups, ridcount = create_groups(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, groups, ridcount, pool.groups)
 
     print("Adding Domain Admins to Local Admins of Computers")
     add_domain_admin_to_local_admin(session, domain_settings.sid)
@@ -276,12 +271,8 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     add_domain_admin_aces(session, domain_settings.domain, computers, users, groups)
 
     print("Creating OUs")
-    ou_props, ou_guid_map = create_computers_ous(session, domain_settings.domain, computers, ou_guid_map, ou_props,
-                                                 domain_settings.nodes, pool.ous)
-
-    ou_props, ou_guid_map = create_users_ous(session, domain_settings.domain, users, ou_guid_map, ou_props,
-                                             domain_settings.nodes, pool.ous)
-
+    ou_props, ou_guid_map = create_computers_ous(session, domain_settings.domain, computers, ou_guid_map, ou_props, domain_settings.nodes, pool.ous)
+    ou_props, ou_guid_map = create_users_ous(session, domain_settings.domain, users, ou_guid_map, ou_props, domain_settings.nodes, pool.ous)
     link_ous_to_domain(session, domain_settings.domain, ou_guid_map)
 
     print("Creating GPOs")
