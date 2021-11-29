@@ -1,6 +1,6 @@
 class DomainSettings:
     def __init__(self):
         self.nodes = None
-        self.domain = ''
+        self.domain = None
         self.current_time = None
-        self.sid = ''
+        self.sid = None
