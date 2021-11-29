@@ -70,7 +70,7 @@ At this point you can enter your parameters directly from the command line by us
                               - uniform(a,b)
                               - triangular(low,high)
                               - gauss(mu,sigma)
-                              - normal(mu,sigma)
+                              - gamma(alpha,beta)
 
 **_Note!_** In order for data generation to occur correctly, either using the [setnodes] command or using [setnodes_distr], the entered value must be greater than zero. Therefore, if the entered value is less or equal to zero, the latter is automatically restored to the default value (600) or to the last value entered using the [setnodes] command.
 
@@ -91,7 +91,7 @@ The run mode allows you to enter directly from the command line a series of para
                               - uniform(a,b)
                               - triangular(low,high)
                               - gauss(mu,sigma)
-                              - normal(mu,sigma)
+                              - gamma(alpha,beta)
     
     [domain]                Name of the domain to generate (mandatory)
     
@@ -163,10 +163,10 @@ _config_nodes_distr.yaml_ contains the information about the distributions of th
     - ...
 
 **_Note!_** There are four available distributions, i.e.:
-- uniform(a, b)
-- triangular(low, high)
-- gauss(mu, sigma)
-- normal(mu, sigma)
+- uniform(a,b)
+- triangular(low,high)
+- gauss(mu,sigma)
+- gamma(alpha,beta)
 
 To use config mode type:
 
