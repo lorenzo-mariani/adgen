@@ -3,7 +3,7 @@ import os.path
 
 from adgen.initializer import initialize
 from adgen.db import clear_and_generate
-from adgen.utils.loader import check_parameters
+from adgen.utils.loader import check_ini_file
 
 
 def check_config_args(args):
@@ -46,10 +46,10 @@ def check_config_args(args):
                     raise Exception(f"Error: Reading From File: wrong {key} key. Check that only the keys 'distribution', 'x' and 'y' are present")
 
             # Check if the enabled distribution is valid
-            available_distr = ['uniform', 'triangular', 'gauss', 'normal']
+            available_distr = ['uniform', 'triangular', 'gauss', 'gamma']
             distr = data[0].get('distribution').lower()
             if distr not in available_distr:
-                raise Exception("Error: Reading From File: distribution not available. Available distributions are: uniform, triangular, gauss, normal")
+                raise Exception("Error: Reading From File: distribution not available. Available distributions are: uniform, triangular, gauss, gamma")
 
 
 def config(args):
@@ -60,7 +60,7 @@ def config(args):
         args -- the list of arguments passed from the command line
     """
     path_to_check = args.get('param')
-    check = check_parameters(path_to_check)
+    check = check_ini_file(path_to_check)
 
     if check == 0:
         db_settings, domain_settings, pool = initialize(args)

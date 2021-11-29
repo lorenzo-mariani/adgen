@@ -22,7 +22,7 @@
 #  y: 300
 #
 #
-# COMMENT: normalvariate(mu,sigma), where x=mu, y=sigma
+# COMMENT: gammavariate(alpha,beta), where x=alpha, y=beta
 - distribution: "invalid_distr"
   x: 100
-  y: 300
+  y: 5
