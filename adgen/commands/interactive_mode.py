@@ -5,7 +5,7 @@ from adgen.db import help, dbconfig, exit, connect, cleardb, setnodes, setnodes_
      generate_data
 from adgen.initializer import initialize
 from adgen.utils.printer import print_commands
-from adgen.utils.loader import check_parameters
+from adgen.utils.loader import check_ini_file
 
 
 def interactive(args):
@@ -16,7 +16,7 @@ def interactive(args):
         args -- the list of arguments passed from the command line
     """
     path_to_check = os.path.join(os.path.abspath('adgen'), 'data', 'default_config.ini')
-    check = check_parameters(path_to_check)
+    check = check_ini_file(path_to_check)
 
     if check == 0:
         db_settings, domain_settings, pool = initialize(args)

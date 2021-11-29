@@ -101,7 +101,7 @@ def test_config_exceptions():
                 elif f == 'config_wrong_distr_keys.yaml':
                     assert exc_info.value == f"Error: Reading From File: wrong {wrong_key} key. Check that only the keys 'distribution', 'x' and 'y' are present"
                 elif f == 'config_wrong_distr.yaml':
-                    assert exc_info.value == "Error: Reading From File: distribution not available. Available distributions are: uniform, triangular, gauss, normal"
+                    assert exc_info.value == "Error: Reading From File: distribution not available. Available distributions are: uniform, triangular, gauss, gamma"
 
 
 def test_config_mode():

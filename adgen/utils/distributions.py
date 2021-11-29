@@ -44,17 +44,28 @@ def check_triangular(low, high):
         raise Exception("ERROR: triangular(low,high): low must be lower than high.")
 
 
-def check_gauss_normal(distr, mu, sigma):
+def check_gauss(mu, sigma):
     """
-    Checks whether the gauss/normal distribution parameters are valid.
+    Checks whether the gauss distribution parameters are valid.
 
     Arguments:
-        distr -- string that tell us if we are considering a gauss or a normal distribution
         mu    -- first parameter of the distribution
         sigma -- second parameter of the distribution
     """
     if mu < 0 or sigma < 0:
-        raise Exception(f"ERROR: {distr}(mu,sigma): mu and sigma must be positive.")
+        raise Exception(f"ERROR: gauss(mu,sigma): mu and sigma must be positive.")
+
+
+def check_gamma(alpha, beta):
+    """
+    Checks whether the gamma distribution parameters are valid.
+
+    Arguments:
+        alpha -- first parameter of the distribution
+        beta  -- second parameter of the distribution
+    """
+    if alpha < 0 or beta < 0:
+        raise Exception(f"ERROR: gamma(alpha,beta): alpha and beta must be positive.")
 
 
 def generate_random_value(domain_settings, distr, val_1, val_2):
@@ -80,8 +91,8 @@ def generate_random_value(domain_settings, distr, val_1, val_2):
             tmp = random.triangular(val_1, val_2)
         elif distr == "gauss":
             tmp = random.gauss(val_1, val_2)
-        elif distr == "normal":
-            tmp = random.normalvariate(val_1, val_2)
+        elif distr == "gamma":
+            tmp = random.gammavariate(val_1, val_2)
 
         if tmp < 100:
             counter += 1
@@ -167,7 +178,7 @@ def interactive_gauss(domain_settings):
     mu = int(input_default("Enter mu", mu))
     sigma = int(input_default("Enter sigma", sigma))
 
-    check_gauss_normal("gauss", mu, sigma)
+    check_gauss(mu, sigma)
 
     print("\nNew mu and sigma")
     print("mu: {}".format(mu))
@@ -176,31 +187,31 @@ def interactive_gauss(domain_settings):
     generate_random_value(domain_settings, "gauss", mu, sigma)
 
 
-def interactive_normal(domain_settings):
+def interactive_gamma(domain_settings):
     """
-    This function creates a normal distribution based on the
+    This function creates a Gaussian distribution based on the
     values entered by the user (interactive mode).
 
     Arguments:
         domain_settings -- the entity to which to configure the domain
     """
-    mu = 100
-    sigma = 300
+    alpha = 100
+    beta = 5
 
-    print("Current mu and sigma")
-    print("mu: {}".format(mu))
-    print("sigma: {}\n".format(sigma))
+    print("Current alpha and beta")
+    print("alpha: {}".format(alpha))
+    print("beta: {}\n".format(beta))
 
-    mu = int(input_default("Enter mu", mu))
-    sigma = int(input_default("Enter sigma", sigma))
+    alpha = int(input_default("Enter alpha", alpha))
+    beta = int(input_default("Enter beta", beta))
 
-    check_gauss_normal("normal", mu, sigma)
+    check_gamma(alpha, beta)
 
-    print("\nNew mu and sigma")
-    print("mu: {}".format(mu))
-    print("sigma: {}".format(sigma))
+    print("\nNew alpha and beta")
+    print("alpha: {}".format(alpha))
+    print("beta: {}".format(beta))
 
-    generate_random_value(domain_settings, "normal", mu, sigma)
+    generate_random_value(domain_settings, "gamma", alpha, beta)
 
 
 def run_distributions(args, domain_settings):
@@ -226,8 +237,11 @@ def run_distributions(args, domain_settings):
     elif distr == "triangular":
         check_triangular(val_1, val_2)
         generate_random_value(domain_settings, distr, val_1, val_2)
-    elif distr == "gauss" or distr == "normal":
-        check_gauss_normal(distr, val_1, val_2)
+    elif distr == "gauss":
+        check_gauss(val_1, val_2)
+        generate_random_value(domain_settings, distr, val_1, val_2)
+    elif distr == "gamma":
+        check_gamma(val_1, val_2)
         generate_random_value(domain_settings, distr, val_1, val_2)
 
 
@@ -254,6 +268,9 @@ def config_distributions(args, domain_settings):
         elif distr == "triangular":
             check_triangular(val_1, val_2)
             generate_random_value(domain_settings, distr, val_1, val_2)
-        elif distr == "gauss" or distr == "normal":
-            check_gauss_normal(distr, val_1, val_2)
+        elif distr == "gauss":
+            check_gauss(val_1, val_2)
+            generate_random_value(domain_settings, distr, val_1, val_2)
+        elif distr == "gamma":
+            check_gamma(val_1, val_2)
             generate_random_value(domain_settings, distr, val_1, val_2)

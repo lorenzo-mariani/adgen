@@ -76,7 +76,7 @@ def test_setnodes_distr():
         assert domain_settings.nodes == 100
 
     # Entering a value of 'b' lower than the value of 'a' raises an exception
-    user_input = ['normal', '200', '100']
+    user_input = ['gauss', '200', '100']
     with pytest.raises(Exception) as exc_info:
         with mock.patch.object(builtins, 'input', side_effect=user_input):
             db.setnodes_distr(domain_settings)
@@ -89,11 +89,18 @@ def test_setnodes_distr():
         assert 500 <= domain_settings.nodes <= 1000
 
     # Entering a negative value of mu raises an exception
-    user_input = ['normal', '-100', '20']
+    user_input = ['gauss', '-100', '20']
     with pytest.raises(Exception) as exc_info:
         with mock.patch.object(builtins, 'input', side_effect=user_input):
             db.setnodes_distr(domain_settings)
             assert exc_info.value == "ERROR: mu and sigma must be positive."
+
+    # Entering a negative value of alpha and beta raises an exception
+    user_input = ['gamma', '-100', '-20']
+    with pytest.raises(Exception) as exc_info:
+        with mock.patch.object(builtins, 'input', side_effect=user_input):
+            db.setnodes_distr(domain_settings)
+            assert exc_info.value == "ERROR: alpha and beta must be positive."
 
 
 def test_setdomain():

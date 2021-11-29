@@ -7,8 +7,6 @@
 import builtins
 import sys
 
-import pytest
-
 import adgen.db as db
 
 from adgen.cl_parser import parse_args

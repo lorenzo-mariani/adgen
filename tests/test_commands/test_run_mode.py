@@ -97,7 +97,7 @@ def test_run_exceptions():
                                      f"\n\t- uniform(a,b)" \
                                      f"\n\t- triangular(low,high)" \
                                      f"\n\t- gauss(mu,sigma)" \
-                                     f"\n\t- normal(mu,sigma)"
+                                     f"\n\t- gamma(alpha,beta)"
 
 
 def test_run_mode():
