@@ -71,7 +71,7 @@ def get_value_from_ini(list_name, opt_name, path):
         return config.get(section, opt_name)
 
 
-def check_parameters(path):
+def check_ini_file(path):
     """
     This function performs checks on the sections within a .ini file.
         - It checks if all the sections are present correctly
