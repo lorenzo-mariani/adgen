@@ -35,7 +35,7 @@ def check_triangular(low, high):
     Checks whether the triangular distribution parameters are valid.
 
     Arguments:
-        low -- first parameter of the distribution
+        low  -- first parameter of the distribution
         high -- second parameter of the distribution
     """
     if low < 0 or high < 0:
