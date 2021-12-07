@@ -35,6 +35,10 @@ To install _adgen_ follow the steps below:
 
 Once installed, _adgen_ can be used in three different modes, i.e., interactive mode, run mode and config mode.
 
+_adgen_ will create an Active Directory domain from a set of values within the configuration files (see [Config mode](#Config-mode) for more details). By default, the nodes will be generated following in an approximate way the percentages present within the configuration files. If you want to make sure that the number of nodes of each item is exactly equal to the percentage indicated in the configuration files, then you have to go inside the _db.py_ file and set _fixed_generation = True_.
+
+**_Note!_** In the case of interactive and run modes, the configuration file under consideration will be _default_config.ini_.
+
 ### Interactive mode
 
 To use _adgen_ in interactive mode, type:
