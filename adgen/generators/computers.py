@@ -1,10 +1,10 @@
 import math
 import random
 
-from adgen.utils.support_functions import cn, cs
+from adgen.utils.support_functions import cn, cs, get_fixed_generation
 
 
-def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list):
+def create_computers(session, domain_name, domain_sid, num_nodes, computers, client_os_list, fixed_generation):
     """
     Creates computer nodes.
 
@@ -26,10 +26,15 @@ def create_computers(session, domain_name, domain_sid, num_nodes, computers, cli
     props = []
     ridcount = 1000
 
+    fixed_list = get_fixed_generation(num_nodes, client_os_list)
+
     for i in range(1, num_nodes + 1):
         comp_name = "COMP{:05d}.{}".format(i, domain_name)
         computers.append(comp_name)
-        os = random.choice(client_os_list)
+        if fixed_generation:
+            os = fixed_list[i - 1]
+        else:
+            os = random.choice(client_os_list)
         enabled = True
         computer_props = {
             "id": cs(ridcount, domain_sid),
@@ -79,17 +84,17 @@ def create_dcs(session, domain_name, domain_sid, dcou, ridcount, server_os_list,
     Creates the domain controllers.
 
     Arguments:
-        session -- the current session
-        domain_name -- the domain name
-        domain_sid -- the domain sid
-        dcou -- the domain controller OU
-        ridcount -- the current rid value
+        session        -- the current session
+        domain_name    -- the domain name
+        domain_sid     -- the domain sid
+        dcou           -- the domain controller OU
+        ridcount       -- the current rid value
         server_os_list -- a list of available client operating systems
-        ous_list -- a list of available OUs
+        ous_list       -- a list of available OUs
 
     Returns:
         dc_props_list -- a list containing the properties of the domain controllers
-        ridcount     -- the new rid value
+        ridcount      -- the new rid value
     """
     dc_props_list = []
 
@@ -251,7 +256,7 @@ def add_execute_dcom_groups(session, computers, it_groups, count):
     Arguments:
         session   -- the current session
         computers -- a list containing the various computers
-        it_groups  -- a list of it groups
+        it_groups -- a list of it groups
         count     -- an int value used for the iterations
     """
     props = []

@@ -1,7 +1,7 @@
 import math
 import random
 
-from adgen.utils.support_functions import cn, cs, cws
+from adgen.utils.support_functions import cn, cs, cws, get_fixed_generation
 
 
 def create_domain_nodes(session, domain_name, domain_sid):
@@ -80,7 +80,7 @@ def data_generation(session, domain_name, domain_sid):
     create_domain(session, domain_name, domain_sid)
 
 
-def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount, groups_list):
+def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount, groups_list, fixed_generation):
     """
     Creates groups.
 
@@ -100,8 +100,13 @@ def create_groups(session, domain_name, domain_sid, num_nodes, groups, ridcount,
     props = []
     group_props_list = []
 
+    fixed_list = get_fixed_generation(num_nodes, groups_list)
+
     for i in range(1, num_nodes + 1):
-        group = random.choice(groups_list)
+        if fixed_generation:
+            group = fixed_list[i - 1]
+        else:
+            group = random.choice(groups_list)
         group_name = "{}{:05d}@{}".format(group, i, domain_name)
         groups.append(group_name)
         sid = cs(ridcount, domain_sid)

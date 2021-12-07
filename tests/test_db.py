@@ -264,7 +264,8 @@ def test_generate_data():
 
     # Create computers
     computers_props, computers, ridcount = db.create_computers(session, domain_settings.domain, domain_settings.sid,
-                                                               domain_settings.nodes, computers, pool.clients_os)
+                                                               domain_settings.nodes, computers, pool.clients_os,
+                                                               db.fixed_generation)
     assert len(computers) == domain_settings.nodes
 
     # Create domain controllers
@@ -285,7 +286,8 @@ def test_generate_data():
 
     # Create groups
     groups_props, groups, ridcount = db.create_groups(session, domain_settings.domain, domain_settings.sid,
-                                                      domain_settings.nodes, groups, ridcount, pool.groups)
+                                                      domain_settings.nodes, groups, ridcount, pool.groups,
+                                                      db.fixed_generation)
     assert len(groups) == domain_settings.nodes
 
     # Add domain admin
@@ -367,7 +369,7 @@ def test_generate_data():
     assert len(result) != 0
 
     # Add outbound ACLs
-    db.add_outbound_acls(session, it_groups, it_users, gpos, computers, pool.acls)
+    db.add_outbound_acls(session, it_groups, it_users, gpos, computers, pool.acls, db.fixed_generation)
 
     # Add kerberoastable users
     db.add_kerberoastable_users(session, it_users)

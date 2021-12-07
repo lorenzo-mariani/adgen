@@ -2,7 +2,7 @@ import random
 import math
 
 from adgen.generators.gpos import link_default_gpos
-from adgen.utils.support_functions import cs
+from adgen.utils.support_functions import cs, get_fixed_generation
 
 
 def create_enterprise_admins(session, domain_name):
@@ -441,12 +441,12 @@ def add_domain_admin_aces(session, domain_name, computers, users, groups):
     )
 
 
-def add_outbound_acls(session, it_groups, it_users, gpos, computers, acl_list):
+def add_outbound_acls(session, it_groups, it_users, gpos, computers, acl_list, fixed_generation):
     """
     Adds outbound ACLs.
 
     Arguments:
-        session -- the current session
+        session   -- the current session
         it_groups -- a list of it groups
         it_users  -- a list of it users
         gpos      -- a list containing the various GPOs
@@ -458,57 +458,64 @@ def add_outbound_acls(session, it_groups, it_users, gpos, computers, acl_list):
     acl_groups = random.sample(it_groups, num_acl_principals)
     all_principals = it_users + it_groups
 
+    fixed_list = get_fixed_generation(len(acl_groups) * 10, acl_list)
+
     for i in acl_groups:
-        ace = random.choice(acl_list)
-        ace_string = '[r:' + ace + '{isacl:true}]'
-        if ace == "GenericAll" or ace == "GenericWrite" or ace == "WriteOwner" or ace == "WriteDacl":
-            p = random.choice(all_principals)
-            p2 = random.choice(gpos)
-            session.run(
-                """
-                MERGE (n:Group {name:$group})
-                MERGE (m {name:$principal})
-                MERGE (n)-""" + ace_string + "->(m)",
-                group=i,
-                principal=p
-            )
-            session.run(
-                """
-                MERGE (n:Group {name:$group})
-                MERGE (m:GPO {name:$principal})
-                MERGE (n)-""" + ace_string + "->(m)",
-                group=i,
-                principal=p2
-            )
-        elif ace == "AddMember":
-            p = random.choice(it_groups)
-            session.run(
-                """
-                MERGE (n:Group {name:$group})
-                MERGE (m:Group {name:$principal})
-                MERGE (n)-""" + ace_string + "->(m)",
-                group=i,
-                principal=p
-            )
-        elif ace == "ReadLAPSPassword":
-            p = random.choice(all_principals)
-            targ = random.choice(computers)
-            session.run(
-                """
-                MERGE (n {name:$principal})
-                MERGE (m:Computer {name:$target})
-                MERGE (n)-[r:ReadLAPSPassword]->(m)
-                """,
-                target=targ,
-                principal=p
-            )
-        else:
-            p = random.choice(it_users)
-            session.run(
-                """
-                MERGE (n:Group {name:$group})
-                MERGE (m:User {name:$principal})
-                MERGE (n)-""" + ace_string + "->(m)",
-                group=i,
-                principal=p
-            )
+        for j in range(len(fixed_list)):
+            if fixed_generation:
+                ace = fixed_list[j - 1]
+            else:
+                ace = random.choice(acl_list)
+
+            ace_string = '[r:' + ace + '{isacl:true}]'
+            if ace == "GenericAll" or ace == "GenericWrite" or ace == "WriteOwner" or ace == "WriteDacl":
+                p = random.choice(all_principals)
+                p2 = random.choice(gpos)
+                session.run(
+                    """
+                    MERGE (n:Group {name:$group})
+                    MERGE (m {name:$principal})
+                    MERGE (n)-""" + ace_string + "->(m)",
+                    group=i,
+                    principal=p
+                )
+                session.run(
+                    """
+                    MERGE (n:Group {name:$group})
+                    MERGE (m:GPO {name:$principal})
+                    MERGE (n)-""" + ace_string + "->(m)",
+                    group=i,
+                    principal=p2
+                )
+            elif ace == "AddMember":
+                p = random.choice(it_groups)
+                session.run(
+                    """
+                    MERGE (n:Group {name:$group})
+                    MERGE (m:Group {name:$principal})
+                    MERGE (n)-""" + ace_string + "->(m)",
+                    group=i,
+                    principal=p
+                )
+            elif ace == "ReadLAPSPassword":
+                p = random.choice(all_principals)
+                targ = random.choice(computers)
+                session.run(
+                    """
+                    MERGE (n {name:$principal})
+                    MERGE (m:Computer {name:$target})
+                    MERGE (n)-[r:ReadLAPSPassword]->(m)
+                    """,
+                    target=targ,
+                    principal=p
+                )
+            else:
+                p = random.choice(it_users)
+                session.run(
+                    """
+                    MERGE (n:Group {name:$group})
+                    MERGE (m:User {name:$principal})
+                    MERGE (n)-""" + ace_string + "->(m)",
+                    group=i,
+                    principal=p
+                )

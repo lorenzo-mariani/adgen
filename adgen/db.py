@@ -14,6 +14,9 @@ from adgen.utils.distributions import interactive_uniform, interactive_triangula
 from adgen.utils.printer import print_help, print_db_settings
 
 
+fixed_generation = True
+
+
 def input_default(prompt, default):
     """
     Prompts you to enter parameters from the command line.
@@ -236,7 +239,7 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     add_standard_edges(session, domain_settings.domain, dcou)
 
     print("Generating Computer Nodes")
-    computers_props, computers, ridcount = create_computers(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, computers, pool.clients_os)
+    computers_props, computers, ridcount = create_computers(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, computers, pool.clients_os, fixed_generation)
 
     print("Creating Domain Controllers")
     dcs_props, ridcount = create_dcs(session, domain_settings.domain, domain_settings.sid, dcou, ridcount, pool.servers_os, pool.ous)
@@ -245,7 +248,7 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     user_props, users, ridcount = create_users(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, domain_settings.current_time, pool.first_names, pool.last_names, users, ridcount)
 
     print("Generating Group Nodes")
-    groups_props, groups, ridcount = create_groups(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, groups, ridcount, pool.groups)
+    groups_props, groups, ridcount = create_groups(session, domain_settings.domain, domain_settings.sid, domain_settings.nodes, groups, ridcount, pool.groups, fixed_generation)
 
     print("Adding Domain Admins to Local Admins of Computers")
     add_domain_admin_to_local_admin(session, domain_settings.sid)
@@ -278,7 +281,7 @@ def generate_data(db_settings, domain_settings, pool):  # pragma: no cover
     print("Creating GPOs")
     gpos = create_gpos(session, domain_settings.domain, gpos)
     link_to_ous(session, gpos, domain_settings.domain, ou_guid_map)
-    add_outbound_acls(session, it_groups, it_users, gpos, computers, pool.acls)
+    add_outbound_acls(session, it_groups, it_users, gpos, computers, pool.acls, fixed_generation)
 
     print("Marking some users as Kerberoastable")
     add_kerberoastable_users(session, it_users)
