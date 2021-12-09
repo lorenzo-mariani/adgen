@@ -1,6 +1,5 @@
 import random
 import itertools
-import math
 
 
 def cn(name, domain):
