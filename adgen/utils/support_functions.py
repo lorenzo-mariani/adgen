@@ -111,16 +111,27 @@ def get_fixed_generation(num_nodes, generic_list):
 
     dictionary[tmp_string] = tmp_value
 
-    remaining_nodes = num_nodes
+    generated_nodes = 0
 
     for k in dictionary.keys():
-        percentage = math.floor((num_nodes * dictionary.get(k)) / 100)
+        percentage = round((num_nodes * dictionary.get(k)) / 100)
         dictionary[k] = percentage
-        remaining_nodes -= percentage
+        generated_nodes += percentage
 
-    if remaining_nodes != 0:
-        dictionary[list(dictionary.keys())[-1]] = dictionary.get(list(dictionary.keys())[-1]) + remaining_nodes
-        remaining_nodes -= remaining_nodes
+    i = 0
+
+    while generated_nodes != num_nodes:
+        if generated_nodes > num_nodes:
+            dictionary[list(dictionary.keys())[i]] = dictionary.get(list(dictionary.keys())[i]) - 1
+            generated_nodes -= 1
+        elif generated_nodes < num_nodes:
+            dictionary[list(dictionary.keys())[i]] = dictionary.get(list(dictionary.keys())[i]) + 1
+            generated_nodes += 1
+
+        if i == len(dictionary.keys()) - 1:
+            i = 0
+        else:
+            i += 1
 
     result = []
 
