@@ -14,7 +14,7 @@ from adgen.utils.distributions import interactive_uniform, interactive_triangula
 from adgen.utils.printer import print_help, print_db_settings
 
 
-fixed_generation = True
+fixed_generation = False
 
 
 def input_default(prompt, default):
