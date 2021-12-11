@@ -207,9 +207,12 @@ def add_rdp_groups(session, computers, it_groups, count):
     """
     props = []
     for i in range(0, count):
-        comp = random.choice(computers)
-        user = random.choice(it_groups)
-        props.append({'a': user, 'b': comp})
+        try:
+            comp = random.choice(computers)
+            user = random.choice(it_groups)
+            props.append({'a': user, 'b': comp})
+        except IndexError:
+            pass
 
     session.run(
         """
@@ -261,9 +264,12 @@ def add_execute_dcom_groups(session, computers, it_groups, count):
     """
     props = []
     for i in range(0, count):
-        comp = random.choice(computers)
-        user = random.choice(it_groups)
-        props.append({'a': user, 'b': comp})
+        try:
+            comp = random.choice(computers)
+            user = random.choice(it_groups)
+            props.append({'a': user, 'b': comp})
+        except IndexError:
+            pass
 
     session.run(
         """
@@ -288,9 +294,12 @@ def add_allowed_to_delegate_to_users(session, computers, it_users, count):
     """
     props = []
     for i in range(0, count):
-        comp = random.choice(computers)
-        user = random.choice(it_users)
-        props.append({'a': user, 'b': comp})
+        try:
+            comp = random.choice(computers)
+            user = random.choice(it_users)
+            props.append({'a': user, 'b': comp})
+        except IndexError:
+            pass
 
     session.run(
         """
@@ -314,11 +323,14 @@ def add_allowed_to_delegate_to_computers(session, computers, count):
     """
     props = []
     for i in range(0, count):
-        comp = random.choice(computers)
-        user = random.choice(computers)
-        if comp == user:
-            continue
-        props.append({'a': user, 'b': comp})
+        try:
+            comp = random.choice(computers)
+            user = random.choice(computers)
+            if comp == user:
+                continue
+            props.append({'a': user, 'b': comp})
+        except IndexError:
+            pass
 
     session.run(
         """
